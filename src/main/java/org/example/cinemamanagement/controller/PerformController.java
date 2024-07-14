@@ -30,8 +30,10 @@ public class PerformController {
     public ResponseEntity<?> getPerforms(CursorBasedPageable cursorBasedPageable, @RequestParam(required = false, name = "start-time") Timestamp startTime) {
         var specification = new PageSpecification<Perform>
                 ("startTime", "", startTime, cursorBasedPageable);
-        return ResponseEntity.ok(performService
-                .getAllPerforms(specification, cursorBasedPageable));
+//        return ResponseEntity.ok(performService
+//                .getAllPerforms(specification, cursorBasedPageable));
+
+        return null;
     }
 
     @GetMapping("/{id}")

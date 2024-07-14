@@ -1,10 +1,14 @@
 package org.example.cinemamanagement.payload.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.cinemamanagement.common.TranslateType;
+import org.example.cinemamanagement.common.ViewType;
 
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -18,10 +22,12 @@ public class AddPerformRequest {
     private UUID filmId;
 
     @JsonProperty("view_type")
-    private String viewType;
+    @Enumerated(EnumType.STRING)
+    private ViewType viewType;
 
     @JsonProperty("translate_type")
-    private String translateType;
+    @Enumerated(EnumType.STRING)
+    private TranslateType translateType;
 
     @JsonProperty("cinema_room_id")
     private UUID cinemaRoomId;
@@ -31,4 +37,6 @@ public class AddPerformRequest {
 
     @JsonProperty("end_time")
     private Timestamp endTime;
+
+    private Double price;
 }
