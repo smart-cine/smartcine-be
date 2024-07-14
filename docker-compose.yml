@@ -15,3 +15,6 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: dbsmartcinedinhvl
       SERVER_PORT: 9999 # internal springboot app port
+networks:
+  smartcine-network:
+    external: true
