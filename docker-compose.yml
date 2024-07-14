@@ -2,6 +2,9 @@ version: "3"
 services:
   springboot-app:
     container_name: smartcine-springboot-app
+    restart: on-failure:3
+    networks:
+      - smartcine-network
     build:
       context: . # use the current directory as the build contexts
       dockerfile: Dockerfile
@@ -12,43 +15,3 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: dbsmartcinedinhvl
       SERVER_PORT: 9999 # internal springboot app port
-    depends_on:
-      - db
-
-  db:
-    container_name: smartcine-mysql
-    image: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: dbsmartcinedinhvl
-      MYSQL_DATABASE: smartcine
-    ports:
-      - 3306:3306
-    volumes:
-      - ./docker_data/mysql/data:/var/lib/mysql
-      - ./docker_data/mysql/smartcine.initdb.sql:/docker-entrypoint-initdb.d/smartcine.initdb.sql
-
-  phpmyadmin:
-    container_name: smartcine-phpmyadmin
-    image: phpmyadmin
-    ports:
-      - 9997:80
-    environment:
-      - PMA_HOST=db
-      - PMA_PORT=3306
-      - PMA_USER=root
-      - PMA_PASSWORD=dbsmartcinedinhvl
-    depends_on:
-      - db
-
-  jenkins:
-    container_name: smartcine-jenkins
-    build:
-      context: ./docker_data/jenkins # use the current directory as the build contexts
-      dockerfile: Dockerfile
-    ports:
-      - 9996:8080
-      - 50000:50000
-    volumes:
-      - ./docker_data/jenkins/data:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /usr/bin/docker:/usr/bin/docker
