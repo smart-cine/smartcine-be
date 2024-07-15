@@ -3,17 +3,13 @@ package org.example.cinemamanagement.controller;
 import org.example.cinemamanagement.model.Tag;
 import org.example.cinemamanagement.pagination.PageSpecificationTag;
 import org.example.cinemamanagement.pagination.CursorBasedPageable;
-import org.example.cinemamanagement.payload.request.AddTagRequest;
+import org.example.cinemamanagement.payload.request.AddOrDeleteTagRequest;
 import org.example.cinemamanagement.payload.response.DataResponse;
-import org.example.cinemamanagement.payload.response.PageResponse;
 import org.example.cinemamanagement.service.TagService;
-import org.example.cinemamanagement.service.impl.TagServiceImpl;
-import org.hibernate.query.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -32,7 +28,7 @@ public class TagController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createTag(@RequestBody AddTagRequest addTagRequest) {
+    public ResponseEntity<?> createTag(@RequestBody AddOrDeleteTagRequest addTagRequest) {
         return ResponseEntity.ok(
                 DataResponse.builder()
                         .data(tagService.createTag(addTagRequest))
@@ -40,5 +36,26 @@ public class TagController {
                         .success(true)
                         .build()
         );
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteTag(@RequestBody AddOrDeleteTagRequest deleteTagRequest) {
+        try {
+            return ResponseEntity.ok(
+                    DataResponse.builder()
+                            .data(tagService.deleteTag(deleteTagRequest))
+                            .message("Tag deleted successfully")
+                            .success(true)
+                            .build()
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                    DataResponse.builder()
+                            .data(false)
+                            .message("Tag not found")
+                            .success(false)
+                            .build()
+            );
+        }
     }
 }

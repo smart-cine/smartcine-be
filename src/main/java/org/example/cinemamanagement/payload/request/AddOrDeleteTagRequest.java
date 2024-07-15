@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
-public class AddTagRequest {
+public class AddOrDeleteTagRequest {
     @JsonProperty("film_id")
     private UUID filmId;
     private List<String> tags;

@@ -5,7 +5,7 @@ import org.example.cinemamanagement.model.Film;
 import org.example.cinemamanagement.model.Tag;
 import org.example.cinemamanagement.pagination.CursorBasedPageable;
 import org.example.cinemamanagement.pagination.PageSpecificationTag;
-import org.example.cinemamanagement.payload.request.AddTagRequest;
+import org.example.cinemamanagement.payload.request.AddOrDeleteTagRequest;
 import org.example.cinemamanagement.payload.response.PageResponse;
 import org.example.cinemamanagement.repository.FilmRepository;
 import org.example.cinemamanagement.repository.TagRepository;
@@ -50,7 +50,7 @@ public class TagServiceImpl implements TagService {
 
 
     @Override
-    public Boolean createTag(AddTagRequest addTagRequest) {
+    public Boolean createTag(AddOrDeleteTagRequest addTagRequest) {
         try {
             if (addTagRequest.getFilmId() == null) {
                 throw new RuntimeException("Film not found");
@@ -73,5 +73,28 @@ public class TagServiceImpl implements TagService {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Boolean deleteTag(AddOrDeleteTagRequest deleteTagRequest) {
+        Film film = filmRepository.findById(deleteTagRequest.getFilmId()).orElseThrow(() -> {
+            throw new RuntimeException("Film not found");
+        });
+
+        List<Tag> tags = film.getTags();
+        for (String tag : deleteTagRequest.getTags()) {
+            try {
+                Tag tagToDelete = tagRepository.findTagByName(tag).orElseThrow(() -> {
+                    throw new RuntimeException("Tag not found");
+                });
+                tags.remove(tagToDelete);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+        }
+
+        filmRepository.save(film);
+        return true;
     }
 }
