@@ -9,9 +9,9 @@ import org.example.cinemamanagement.repository.FilmRepository;
 import org.example.cinemamanagement.repository.TagRepository;
 import org.example.cinemamanagement.service.FilmService;
 import org.example.cinemamanagement.utils.ConvertJsonNameToTypeName;
-import org.example.cinemamanagement.utils.CursorBasedPageable;
-import org.example.cinemamanagement.utils.PageResponse;
-import org.example.cinemamanagement.utils.PageSpecification;
+import org.example.cinemamanagement.pagination.CursorBasedPageable;
+import org.example.cinemamanagement.payload.response.PageResponse;
+import org.example.cinemamanagement.pagination.PageSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -45,10 +45,6 @@ public class FilmServiceImpl implements FilmService {
             throw new RuntimeException("Film already exists");
         }
 
-        List<Tag> tags = addFilmRequest.getTags().stream().map(tagName -> {
-            Optional<Tag> tag = tagRepository.findTagByName(tagName);
-            return tag.orElseGet(() -> tagRepository.save(Tag.builder().name(tagName).build()));
-        }).toList();
 
         Film tempFilm = filmRepository.save(Film.builder()
                 .title(addFilmRequest.getTitle())
@@ -59,9 +55,19 @@ public class FilmServiceImpl implements FilmService {
                 .pictureUrl(addFilmRequest.getPictureUrl())
                 .trailerUrl(addFilmRequest.getTrailerUrl())
                 .duration(addFilmRequest.getDuration())
-                .tags(tags)
                 .description(addFilmRequest.getDescription())
                 .language(addFilmRequest.getLanguage())
+                .tags(addFilmRequest.getTags().stream()
+                        .map(tagName -> {
+                            Optional<Tag> tempTag = tagRepository.findTagByName(tagName);
+                            if (tempTag.isEmpty()) {
+                                Tag tag = Tag.builder()
+                                        .name(tagName)
+                                        .build();
+                                return tagRepository.save(tag);
+                            }
+                            return tempTag.get();
+                        }).toList())
                 .build());
 
         return FilmMapper.toDTO(tempFilm);
@@ -102,11 +108,19 @@ public class FilmServiceImpl implements FilmService {
             PageSpecification<Film> pageSpecification,
             CursorBasedPageable cursorBasedPageable) {
 
+
+        Map<String, Object> pagingMap = new HashMap<>();
+        pagingMap.put("previousPageCursor", null);
+        pagingMap.put("nextPageCursor", null);
+        pagingMap.put("size", cursorBasedPageable.getSize());
+        pagingMap.put("total", 0);
+
         var filmSlide = filmRepository.findAll(pageSpecification,
                 Pageable.ofSize(cursorBasedPageable.getSize()));
 
-        if (!filmSlide.hasContent()) return new PageResponse<>(false, null, null);
-        Map<String, String> pagingMap = new HashMap<>();
+        if (!filmSlide.hasContent()) {
+            return new PageResponse<>(false, List.of(), pagingMap);
+        }
 
         List<Film> films = filmSlide.getContent();
         pagingMap.put("previousPageCursor", cursorBasedPageable.getEncodedCursor(films.get(0).getTitle(), hasPreviousPage(films.get(0))));

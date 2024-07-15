@@ -6,9 +6,9 @@ import org.example.cinemamanagement.dto.CinemaLayoutDTO;
 import org.example.cinemamanagement.dto.CinemaManagerDTO;
 import org.example.cinemamanagement.model.Cinema;
 import org.example.cinemamanagement.payload.request.AddCinemaRequest;
-import org.example.cinemamanagement.utils.CursorBasedPageable;
-import org.example.cinemamanagement.utils.PageResponse;
-import org.example.cinemamanagement.utils.PageSpecification;
+import org.example.cinemamanagement.pagination.CursorBasedPageable;
+import org.example.cinemamanagement.payload.response.PageResponse;
+import org.example.cinemamanagement.pagination.PageSpecification;
 
 import java.util.List;
 import java.util.Map;

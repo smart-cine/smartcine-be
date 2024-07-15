@@ -1,4 +1,4 @@
-package org.example.cinemamanagement.utils;
+package org.example.cinemamanagement.pagination;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;

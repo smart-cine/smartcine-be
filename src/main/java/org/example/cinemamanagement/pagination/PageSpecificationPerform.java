@@ -3,8 +3,6 @@ package org.example.cinemamanagement.pagination;
 import jakarta.persistence.criteria.*;
 import org.example.cinemamanagement.model.Cinema;
 import org.example.cinemamanagement.model.CinemaRoom;
-import org.example.cinemamanagement.model.Perform;
-import org.example.cinemamanagement.utils.CursorBasedPageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.sql.Timestamp;
@@ -31,9 +29,9 @@ public class PageSpecificationPerform<T> implements Specification<T> {
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         List<Predicate> predicates = new ArrayList<>();
         Predicate paginationFilter = applyPaginationFilter(root, criteriaBuilder);
-        predicates.add(paginationFilter);
 
-        predicates.add(filterBaseOnParams(root, criteriaBuilder));
+        predicates.add(paginationFilter);
+        predicates.add(filterBaseOnParams(root, query, criteriaBuilder));
 
         query.orderBy(criteriaBuilder.asc(root.get(mainFieldName)));
 
@@ -56,12 +54,13 @@ public class PageSpecificationPerform<T> implements Specification<T> {
         }
     }
 
-    private Predicate filterBaseOnParams(Root<T> root, CriteriaBuilder criteriaBuilder) {
-
-//        if (!this.paramsSearching.containsKey("featured")) {
-//            Join<Perform, CinemaRoom>  performCinemaRoomJoin = root.join("cinemaRoom");
-//            Join<CinemaRoom, Cinema> cinemaRoomCinemaJoin = root.
-//        }
+    private Predicate filterBaseOnParams(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+        if (this.paramsSearching.containsKey("cinemaId")) {
+            // get list perform by cinemaId
+            Join<T, CinemaRoom> cinemaRoomJoin = root.join("cinemaRoom");
+            Join<CinemaRoom, Cinema> cinemaJoin = cinemaRoomJoin.join("cinema");
+            return criteriaBuilder.equal(cinemaJoin.get("id"), this.paramsSearching.get("cinemaId"));
+        }
         return null;
     }
 }

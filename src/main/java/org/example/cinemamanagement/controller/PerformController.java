@@ -5,22 +5,17 @@ import org.example.cinemamanagement.pagination.PageSpecificationPerform;
 import org.example.cinemamanagement.payload.request.AddPerformRequest;
 import org.example.cinemamanagement.payload.response.DataResponse;
 import org.example.cinemamanagement.service.PerformService;
-import org.example.cinemamanagement.utils.CursorBasedPageable;
-import org.example.cinemamanagement.utils.PageSpecification;
+import org.example.cinemamanagement.pagination.CursorBasedPageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/perform")
+@RequestMapping("/api/v1")
 public class PerformController {
-
     PerformService performService;
 
     @Autowired
@@ -30,10 +25,16 @@ public class PerformController {
 
     @GetMapping("perform" )
     public ResponseEntity<?> getPerforms(CursorBasedPageable cursorBasedPageable, @RequestParam(required = false, name = "cinema-id") UUID cinemaId) {
-        var specification = new PageSpecificationPerform<Perform>("startTime",
-                cursorBasedPageable,
-                Map.of("cinemaId", cinemaId));
-        return ResponseEntity.ok(performService.getAllPerforms(specification, cursorBasedPageable));
+        try{
+            var specification = new PageSpecificationPerform<Perform>("startTime",
+                    cursorBasedPageable,
+                    Map.of("cinemaId", cinemaId));
+            return ResponseEntity.ok(performService.getAllPerforms(specification, cursorBasedPageable));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @GetMapping("current-performs")

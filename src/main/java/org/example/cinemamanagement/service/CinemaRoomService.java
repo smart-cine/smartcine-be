@@ -3,9 +3,9 @@ package org.example.cinemamanagement.service;
 import org.example.cinemamanagement.dto.CinemaRoomDTO;
 import org.example.cinemamanagement.model.CinemaRoom;
 import org.example.cinemamanagement.payload.request.AddOrUpdateCinemaRoom;
-import org.example.cinemamanagement.utils.CursorBasedPageable;
-import org.example.cinemamanagement.utils.PageResponse;
-import org.example.cinemamanagement.utils.PageSpecification;
+import org.example.cinemamanagement.pagination.CursorBasedPageable;
+import org.example.cinemamanagement.payload.response.PageResponse;
+import org.example.cinemamanagement.pagination.PageSpecification;
 
 import java.util.List;
 import java.util.UUID;

@@ -1,15 +1,14 @@
 package org.example.cinemamanagement.controller;
 
 import org.example.cinemamanagement.dto.CinemaDTO;
-import org.example.cinemamanagement.dto.CinemaManagerDTO;
 import org.example.cinemamanagement.model.Cinema;
 import org.example.cinemamanagement.payload.request.AddCinemaRequest;
 import org.example.cinemamanagement.payload.response.DataResponse;
 import org.example.cinemamanagement.service.CinemaManagerService;
 import org.example.cinemamanagement.service.CinemaService;
-import org.example.cinemamanagement.utils.CursorBasedPageable;
-import org.example.cinemamanagement.utils.PageResponse;
-import org.example.cinemamanagement.utils.PageSpecification;
+import org.example.cinemamanagement.pagination.CursorBasedPageable;
+import org.example.cinemamanagement.payload.response.PageResponse;
+import org.example.cinemamanagement.pagination.PageSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +29,10 @@ public class CinemaController {
     private CinemaManagerService cinemaManagerService;
 
     @GetMapping
-    public ResponseEntity<?> getAllCinema(CursorBasedPageable cursorBasedPageable, @RequestParam(required = false) String nameCinemaSearching ) {
-        var specification = new PageSpecification<Cinema>("name", "",  nameCinemaSearching, cursorBasedPageable );
+    public ResponseEntity<?> getAllCinema(
+            CursorBasedPageable cursorBasedPageable,
+            @RequestParam(required = false) String nameCinemaSearching) {
+        var specification = new PageSpecification<Cinema>("name", "", nameCinemaSearching, cursorBasedPageable);
         PageResponse<List<CinemaDTO>> cinemaPage = cinemaService.page(specification, cursorBasedPageable);
         return ResponseEntity.ok(cinemaPage);
     }

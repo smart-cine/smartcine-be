@@ -1,4 +1,4 @@
-package org.example.cinemamanagement.utils;
+package org.example.cinemamanagement.pagination;
 
 
 import lombok.AllArgsConstructor;
