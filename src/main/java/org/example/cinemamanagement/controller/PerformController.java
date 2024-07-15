@@ -1,6 +1,7 @@
 package org.example.cinemamanagement.controller;
 
 import org.example.cinemamanagement.model.Perform;
+import org.example.cinemamanagement.pagination.PageSpecificationPerform;
 import org.example.cinemamanagement.payload.request.AddPerformRequest;
 import org.example.cinemamanagement.payload.response.DataResponse;
 import org.example.cinemamanagement.service.PerformService;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -26,17 +28,21 @@ public class PerformController {
         this.performService = performService;
     }
 
-    @GetMapping
-    public ResponseEntity<?> getPerforms(CursorBasedPageable cursorBasedPageable, @RequestParam(required = false, name = "start-time") Timestamp startTime) {
-        var specification = new PageSpecification<Perform>
-                ("startTime", "", startTime, cursorBasedPageable);
-//        return ResponseEntity.ok(performService
-//                .getAllPerforms(specification, cursorBasedPageable));
+    @GetMapping("perform" )
+    public ResponseEntity<?> getPerforms(CursorBasedPageable cursorBasedPageable, @RequestParam(required = false, name = "cinema-id") UUID cinemaId) {
+        var specification = new PageSpecificationPerform<Perform>("startTime",
+                cursorBasedPageable,
+                Map.of("cinemaId", cinemaId));
+        return ResponseEntity.ok(performService.getAllPerforms(specification, cursorBasedPageable));
+    }
 
+    @GetMapping("current-performs")
+    public ResponseEntity<?> getPerformsInRangeDay()
+    {
         return null;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("perform/{id}")
     public ResponseEntity<?> getPerform(@PathVariable UUID id) {
         DataResponse dataResponse = DataResponse.builder()
                 .success(true)
@@ -47,8 +53,7 @@ public class PerformController {
         return ResponseEntity.ok(dataResponse);
     }
 
-
-    @PostMapping
+    @PostMapping("perform")
     public ResponseEntity<?> addPerform(@RequestBody AddPerformRequest addPerformRequest) {
         DataResponse dataResponse = new DataResponse();
         dataResponse.setMessage("Add perform successfully");
@@ -58,7 +63,7 @@ public class PerformController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("perform/{id}")
     public ResponseEntity<?> updatePerform(@PathVariable UUID id, @RequestBody Map<String, Object> payload) {
         DataResponse dataResponse = DataResponse.builder()
                 .success(true)
@@ -69,7 +74,7 @@ public class PerformController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("perform/{id}")
     public ResponseEntity<?> deletePerform() {
         DataResponse dataResponse = DataResponse.builder()
                 .success(true)

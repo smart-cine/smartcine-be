@@ -37,5 +37,5 @@ public class FilmDTO {
 
     private String language;
 
-    private List<TagDTO> tags;
+    private List<String> tags;
 }

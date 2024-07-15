@@ -16,12 +16,8 @@ public class FilmMapper {
         TypeMap<Film, FilmDTO> typeMap = new ModelMapper().createTypeMap(Film.class, FilmDTO.class);
         FilmDTO filmDTO = typeMap.map(film);
 
-        filmDTO.setTags(film.getTags().stream().map(tag -> {
-            return TagDTO.builder()
-                    .id(tag.getId())
-                    .name(tag.getName())
-                    .build();
-        }).collect(Collectors.toList()));
+        filmDTO.setTags(film.getTags().stream().map(Tag::getName)
+                .collect(Collectors.toList()));
 
         return filmDTO;
     }

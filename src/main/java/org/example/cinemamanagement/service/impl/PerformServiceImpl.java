@@ -3,6 +3,7 @@ package org.example.cinemamanagement.service.impl;
 import org.example.cinemamanagement.dto.PerformDTO;
 import org.example.cinemamanagement.mapper.PerformMapper;
 import org.example.cinemamanagement.model.*;
+import org.example.cinemamanagement.pagination.PageSpecificationPerform;
 import org.example.cinemamanagement.payload.request.AddPerformRequest;
 import org.example.cinemamanagement.repository.*;
 import org.example.cinemamanagement.service.PerformService;
@@ -42,7 +43,7 @@ public class PerformServiceImpl implements PerformService {
 
     @Override
     public PageResponse<List<PerformDTO>> getAllPerforms(
-            PageSpecification<Perform> pageSpecification,
+            PageSpecificationPerform<Perform> pageSpecification,
             CursorBasedPageable cursorBasedPageable) {
 
         var performSlide = performRepository.findAll(pageSpecification,
