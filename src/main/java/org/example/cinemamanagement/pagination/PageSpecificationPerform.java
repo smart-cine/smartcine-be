@@ -1,6 +1,7 @@
 package org.example.cinemamanagement.pagination;
 
 import jakarta.persistence.criteria.*;
+import org.example.cinemamanagement.model.Cinema;
 import org.example.cinemamanagement.model.CinemaRoom;
 import org.example.cinemamanagement.model.Perform;
 import org.example.cinemamanagement.utils.CursorBasedPageable;
@@ -57,13 +58,10 @@ public class PageSpecificationPerform<T> implements Specification<T> {
 
     private Predicate filterBaseOnParams(Root<T> root, CriteriaBuilder criteriaBuilder) {
 
-        if (!this.paramsSearching.containsKey("featured")) {
-            Predicate predicate;
-
-            Join<Perform, CinemaRoom> join = root.join("cinemaRoom", JoinType.INNER);
-//            join.on(criteriaBuilder.equal(join.get()))
-            return null;
-        }
+//        if (!this.paramsSearching.containsKey("featured")) {
+//            Join<Perform, CinemaRoom>  performCinemaRoomJoin = root.join("cinemaRoom");
+//            Join<CinemaRoom, Cinema> cinemaRoomCinemaJoin = root.
+//        }
         return null;
     }
 }

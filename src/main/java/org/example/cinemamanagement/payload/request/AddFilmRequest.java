@@ -16,7 +16,7 @@ public class AddFilmRequest {
     private String country;
     @JsonProperty("restrict_age")
     private Integer restrictAge;
-    private List<TagDTO> tags;
+    private List<String> tags;
     @JsonProperty("picture_url")
     private String pictureUrl;
     @JsonProperty("trailer_url")

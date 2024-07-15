@@ -45,14 +45,10 @@ public class FilmServiceImpl implements FilmService {
             throw new RuntimeException("Film already exists");
         }
 
-        List<Tag> tags = addFilmRequest.getTags().stream().map(tag -> {
-                    Optional<Tag> currTag = tagRepository.findTagByName(tag.getName());
-                    if (currTag.isEmpty()) {
-                        return tagRepository.save(Tag.builder().name(tag.getName()).build());
-                    }
-                    return currTag.get();
-                }
-        ).toList();
+        List<Tag> tags = addFilmRequest.getTags().stream().map(tagName -> {
+            Optional<Tag> tag = tagRepository.findTagByName(tagName);
+            return tag.orElseGet(() -> tagRepository.save(Tag.builder().name(tagName).build()));
+        }).toList();
 
         Film tempFilm = filmRepository.save(Film.builder()
                 .title(addFilmRequest.getTitle())
