@@ -3,6 +3,8 @@ package org.example.cinemamanagement.controller;
 import org.example.cinemamanagement.model.Tag;
 import org.example.cinemamanagement.pagination.PageSpecificationTag;
 import org.example.cinemamanagement.pagination.CursorBasedPageable;
+import org.example.cinemamanagement.payload.request.AddTagRequest;
+import org.example.cinemamanagement.payload.response.DataResponse;
 import org.example.cinemamanagement.payload.response.PageResponse;
 import org.example.cinemamanagement.service.TagService;
 import org.example.cinemamanagement.service.impl.TagServiceImpl;
@@ -30,7 +32,13 @@ public class TagController {
     }
 
     @PostMapping
-    public ResponseEntity<Tag> createTag() {
-        return null;
+    public ResponseEntity<?> createTag(@RequestBody AddTagRequest addTagRequest) {
+        return ResponseEntity.ok(
+                DataResponse.builder()
+                        .data(tagService.createTag(addTagRequest))
+                        .message("Tag created successfully")
+                        .success(true)
+                        .build()
+        );
     }
 }

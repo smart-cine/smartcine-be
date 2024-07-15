@@ -1,10 +1,13 @@
 package org.example.cinemamanagement.service.impl;
 
 import org.example.cinemamanagement.mapper.TagMapper;
+import org.example.cinemamanagement.model.Film;
 import org.example.cinemamanagement.model.Tag;
 import org.example.cinemamanagement.pagination.CursorBasedPageable;
 import org.example.cinemamanagement.pagination.PageSpecificationTag;
+import org.example.cinemamanagement.payload.request.AddTagRequest;
 import org.example.cinemamanagement.payload.response.PageResponse;
+import org.example.cinemamanagement.repository.FilmRepository;
 import org.example.cinemamanagement.repository.TagRepository;
 import org.example.cinemamanagement.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,9 @@ import java.util.Map;
 public class TagServiceImpl implements TagService {
     @Autowired
     TagRepository tagRepository;
+
+    @Autowired
+    FilmRepository filmRepository;
 
     @Override
     public PageResponse<List<String>> getAllTags(CursorBasedPageable cursorBasedPageable, PageSpecificationTag<Tag> pageSpecificationTag) {
@@ -42,8 +48,30 @@ public class TagServiceImpl implements TagService {
         }
     }
 
+
     @Override
-    public Boolean createTag(String tags) {
-        return null;
+    public Boolean createTag(AddTagRequest addTagRequest) {
+        try {
+            if (addTagRequest.getFilmId() == null) {
+                throw new RuntimeException("Film not found");
+            }
+            Film film = filmRepository.findById(addTagRequest.getFilmId()).orElseThrow(() -> {
+                throw new RuntimeException("Film not found");
+            });
+
+            for (String tag : addTagRequest.getTags()) {
+                film.getTags().add(tagRepository.findTagByName(tag).orElseGet(() -> {
+                    return tagRepository.save(Tag.builder()
+                            .name(tag)
+                            .build());
+                }));
+            }
+
+            filmRepository.save(film);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 }
