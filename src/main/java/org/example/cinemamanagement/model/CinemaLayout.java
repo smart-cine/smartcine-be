@@ -21,9 +21,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "cinema_layout")
 public class CinemaLayout {
-    @JsonIgnore
-    @ManyToMany(mappedBy = "cinemaLayouts")
-    private List<Cinema> cinemas;
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "cinemaLayout")
@@ -43,12 +40,6 @@ public class CinemaLayout {
     @Enumerated(EnumType.STRING)
     private LayoutType layoutType;
 
-    public void addCinema(Cinema cinema) {
-        if (this.cinemas == null) {
-            this.cinemas = new ArrayList<>();
-        }
-        this.cinemas.add(cinema);
-    }
 
     public void addCinemaRoom(CinemaRoom cinemaRoom) {
         if (this.cinemaRooms == null) {

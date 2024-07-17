@@ -19,13 +19,6 @@ import java.util.UUID;
 public class Cinema {
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "m2m_cinema_layout",
-            joinColumns = @JoinColumn(name = "cinema_id"),
-            inverseJoinColumns = @JoinColumn(name = "cinema_layout_id"))
-    List<CinemaLayout> cinemaLayouts;
-
-    @JsonIgnore
     @OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<CinemaRoom> cinemaRooms;
 
@@ -57,10 +50,4 @@ public class Cinema {
         this.cinemaManagers.add(user);
     }
 
-    public void addCinemaLayout(CinemaLayout cinemaLayout) {
-        if (this.cinemaLayouts == null) {
-            this.cinemaLayouts = new ArrayList<>();
-        }
-        this.cinemaLayouts.add(cinemaLayout);
-    }
 }
