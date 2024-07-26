@@ -6,9 +6,10 @@ import org.example.cinemamanagement.dto.CinemaManagerDTO;
 import org.example.cinemamanagement.mapper.CinemaLayoutMapper;
 import org.example.cinemamanagement.mapper.CinemaMapper;
 import org.example.cinemamanagement.model.Cinema;
-import org.example.cinemamanagement.model.User;
+import org.example.cinemamanagement.model.Account;
 import org.example.cinemamanagement.payload.request.AddCinemaRequest;
 import org.example.cinemamanagement.repository.CinemaLayoutRepository;
+import org.example.cinemamanagement.repository.CinemaProviderRepository;
 import org.example.cinemamanagement.repository.CinemaRepository;
 import org.example.cinemamanagement.repository.UserRepository;
 import org.example.cinemamanagement.service.CinemaService;
@@ -27,14 +28,17 @@ import java.util.stream.Collectors;
 @Service
 public class CinemaServiceImpl implements CinemaService {
 
-    @Autowired
     CinemaRepository cinemaRepository;
-
-    @Autowired
     UserRepository userRepository;
-
-    @Autowired
     CinemaLayoutRepository cinemaLayoutRepository;
+    CinemaProviderRepository cinemaProviderRepository;
+
+    CinemaServiceImpl(CinemaRepository cinemaRepository, UserRepository userRepository, CinemaLayoutRepository cinemaLayoutRepository, CinemaProviderRepository cinemaProviderRepository) {
+        this.cinemaRepository = cinemaRepository;
+        this.userRepository = userRepository;
+        this.cinemaLayoutRepository = cinemaLayoutRepository;
+        this.cinemaProviderRepository = cinemaProviderRepository;
+    }
 
     @Override
     public List<CinemaDTO> getAllCinema() {
@@ -56,7 +60,13 @@ public class CinemaServiceImpl implements CinemaService {
     public CinemaDTO addCinema(AddCinemaRequest addCinemaRequest) {
         Cinema cinema = Cinema.builder()
                 .name(addCinemaRequest.getName())
-                .variant(addCinemaRequest.getVariant())
+                .address(addCinemaRequest.getAddress())
+                .cinemaProvider(cinemaProviderRepository.findById(addCinemaRequest
+                                .getProviderId()
+                        )
+                        .orElseThrow(() ->
+                                new RuntimeException("Cinema Provider not found with id: " +
+                                        addCinemaRequest.getProviderId())))
                 .build();
 
         cinemaRepository.save(cinema);
@@ -67,7 +77,7 @@ public class CinemaServiceImpl implements CinemaService {
     @Override
     public CinemaDTO updateCinema(UUID id, Map<String, Object> payload) {
         Cinema cinema = cinemaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Film not found"));
+                .orElseThrow(() -> new RuntimeException("Cinema not found"));
 
         for (Map.Entry<String, Object> entry : payload.entrySet()) {
             String key = entry.getKey();
@@ -96,22 +106,22 @@ public class CinemaServiceImpl implements CinemaService {
     // check
     @Override
     public CinemaManagerDTO deleteCinemaManagerOutOfCinema(String emailUser, UUID idCinema) {
-        Cinema cinema = cinemaRepository.findById(idCinema)
-                .orElseThrow(() -> new RuntimeException("Cinema not found with id: " + idCinema));
-
-        User user = userRepository.findUserByEmail(emailUser)
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + emailUser));
-
-        cinema.getCinemaManagers().remove(user);
-        cinemaRepository.save(cinema);
-
-        return CinemaManagerDTO
-                .builder()
-                .user(user)
-                .cinemas(user.getCinemas())
-                .build();
+//        Cinema cinema = cinemaRepository.findById(idCinema)
+//                .orElseThrow(() -> new RuntimeException("Cinema not found with id: " + idCinema));
+//
+//        Account account = userRepository.findUserByEmail(emailUser)
+//                .orElseThrow(() -> new RuntimeException("User not found with email: " + emailUser));
+//
+//        cinema.getCinemaManagers().remove(account);
+//        cinemaRepository.save(cinema);
+//
+//        return CinemaManagerDTO
+//                .builder()
+//                .account(account)
+//                .cinemas(account.getCinemas())
+//                .build();
+        return null;
     }
-
 
 
     @Override
@@ -119,9 +129,10 @@ public class CinemaServiceImpl implements CinemaService {
         Cinema cinema = cinemaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cinema not found with id: " + id));
 
-        return cinema.getCinemaLayouts().stream()
-                .map(CinemaLayoutMapper::toDTO)
-                .collect(Collectors.toList());
+//        return cinema.getCinemaLayouts().stream()
+//                .map(CinemaLayoutMapper::toDTO)
+//                .collect(Collectors.toList());
+        return null;
     }
 
     public PageResponse<List<CinemaDTO>> page(
@@ -132,14 +143,15 @@ public class CinemaServiceImpl implements CinemaService {
                 Pageable.ofSize(cursorBasedPageable.getSize()));
 
 
-
-        if (!cinemaSlide.hasContent()) return new PageResponse<>(false, null, null);
         Map<String, String> pagingMap = new HashMap<>();
+        pagingMap.put("previousPageCursor", null);
+        pagingMap.put("nextPageCursor", null);
+        pagingMap.put("size", String.valueOf(cursorBasedPageable.getSize()));
+        if (!cinemaSlide.hasContent()) return new PageResponse<>(false, List.of(), pagingMap);
 
         List<Cinema> cinemas = cinemaSlide.getContent();
         pagingMap.put("previousPageCursor", cursorBasedPageable.getEncodedCursor(cinemas.get(0).getName(), cinemaSlide.hasPrevious()));
         pagingMap.put("nextPageCursor", cursorBasedPageable.getEncodedCursor(cinemas.get(cinemas.size() - 1).getName(), cinemaSlide.hasNext()));
-        pagingMap.put("size", String.valueOf(cursorBasedPageable.getSize()));
         pagingMap.put("total", String.valueOf(cinemaSlide.getTotalElements()));
 
         return new PageResponse<>(true, cinemas.stream()

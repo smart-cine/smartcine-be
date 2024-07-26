@@ -8,6 +8,9 @@ import org.modelmapper.TypeMap;
 public class CinemaMapper {
     public static CinemaDTO toDTO(Cinema cinema) {
         TypeMap<Cinema, CinemaDTO> typeMap = new ModelMapper().createTypeMap(Cinema.class, CinemaDTO.class);
-        return typeMap.map(cinema);
+        CinemaDTO cinemaDTO = typeMap.map(cinema);
+        cinemaDTO.setProviderId(cinema.getCinemaProvider().getId());
+
+        return cinemaDTO;
     }
 }

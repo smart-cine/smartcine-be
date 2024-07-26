@@ -2,12 +2,9 @@ package org.example.cinemamanagement.service.impl;
 
 import org.example.cinemamanagement.dto.PickSeatDTO;
 import org.example.cinemamanagement.mapper.PickSeatMapper;
-import org.example.cinemamanagement.model.Perform;
-import org.example.cinemamanagement.model.PickSeat;
-import org.example.cinemamanagement.model.User;
+import org.example.cinemamanagement.model.Account;
 import org.example.cinemamanagement.payload.request.DeletePickSeatRequest;
 import org.example.cinemamanagement.payload.request.PickSeatRequest;
-import org.example.cinemamanagement.payload.response.SocketResponse;
 import org.example.cinemamanagement.repository.PerformRepository;
 import org.example.cinemamanagement.repository.PickSeatRepository;
 import org.example.cinemamanagement.repository.UserRepository;
@@ -18,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -86,11 +82,11 @@ public class PickSeatServiceImpl implements PickSeatService {
 
     @Override
     public List<PickSeatDTO> getAllPickSeatsByUser() {
-        User user = (User) SecurityContextHolder.getContext()
+        Account account = (Account) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
 
-        return pickSeatRepository.findByUserId(user.getId()).stream()
+        return pickSeatRepository.findByAccountId(account.getId()).stream()
                 .map(PickSeatMapper::toDTO)
                 .toList();
     }

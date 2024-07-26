@@ -5,10 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.cinemamanagement.common.Status;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -28,12 +28,14 @@ public class Payment {
             CascadeType.MERGE,
             CascadeType.PERSIST,
             CascadeType.REFRESH})
-    private User user;
+    @JoinColumn(name = "account_id")
+    private Account account;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH,
             CascadeType.MERGE,
             CascadeType.PERSIST,
             CascadeType.REFRESH})
+    @JoinColumn(name = "perform_id")
     private Perform perform;
 
 
@@ -48,6 +50,10 @@ public class Payment {
             CascadeType.PERSIST,
             CascadeType.REFRESH})
     private Item item;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @PrePersist
     protected void onCreate() {   // create Date when dateCreate saved in db first time

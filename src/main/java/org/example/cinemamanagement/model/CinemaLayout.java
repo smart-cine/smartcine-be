@@ -19,7 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "cinema_layout")
+@Table(name = "cinemalayout")
 public class CinemaLayout {
 
     @JsonIgnore

@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,13 +21,6 @@ public class Cinema {
     @OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<CinemaRoom> cinemaRooms;
 
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "cinema_manager",
-            joinColumns = @JoinColumn(name = "cinema_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    List<User> cinemaManagers;
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -36,18 +28,33 @@ public class Cinema {
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @Column(name = "variant")
-    private String variant;
+    @Column(name = "address")
+    private String address;
 
     @Column(name = "name")
     private String name;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.PERSIST,
+            CascadeType.REFRESH}
+    )
+    @JoinColumn(name = "provider_id")
+    private CinemaProvider cinemaProvider;
 
-    public void addUser(User user) {
-        if (this.cinemaManagers == null) {
-            this.cinemaManagers = new ArrayList<>();
-        }
-        this.cinemaManagers.add(user);
-    }
+
+    @JsonIgnore
+    @ManyToMany(cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.PERSIST,
+            CascadeType.REFRESH
+    }, fetch = FetchType.LAZY)
+    @JoinTable(name = "_CinemaManager",
+            joinColumns = @JoinColumn(name = "cinema_id"),
+            inverseJoinColumns = @JoinColumn(name = "manager_id"))
+    private List<ManagerAccount> managerAccounts;
 
 }

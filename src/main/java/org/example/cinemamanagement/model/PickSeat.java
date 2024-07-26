@@ -13,7 +13,7 @@ import java.util.UUID;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "pick_seat")
+@Table(name = "pickseat")
 public class PickSeat {
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -26,13 +26,14 @@ public class PickSeat {
             CascadeType.PERSIST,
             CascadeType.REFRESH}
     )
-    private User user;
+    private Account account;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH,
             CascadeType.MERGE,
             CascadeType.PERSIST,
             CascadeType.REFRESH}
     )
+    @JoinColumn(name = "perform_id")
     private Perform perform;
 
     @Column(name = "code")

@@ -17,7 +17,7 @@ import java.util.UUID;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "perform")
+@Table(name = "Perform")
 public class Perform {
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -31,6 +31,7 @@ public class Perform {
                     CascadeType.PERSIST,
                     CascadeType.REFRESH}
     )
+    @JoinColumn(name = "film_id")
     private Film film;
 
     @Column(name = "view_type")
@@ -47,7 +48,7 @@ public class Perform {
                     CascadeType.PERSIST,
                     CascadeType.REFRESH}
     )
-    @JoinColumn(name = "dest_id")
+    @JoinColumn(name = "cinema_room_id")
     private CinemaRoom cinemaRoom;
 
     @JsonIgnore

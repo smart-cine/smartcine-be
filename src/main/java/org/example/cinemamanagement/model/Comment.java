@@ -29,7 +29,7 @@ public class Comment {
                     CascadeType.REFRESH
             }
     )
-    private User user;
+    private Account account;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade =
             {
@@ -40,7 +40,6 @@ public class Comment {
             }
     )
     private Film film;
-
 
     @Column(name = "type")
     @Enumerated(EnumType.STRING)

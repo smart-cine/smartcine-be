@@ -10,7 +10,7 @@ import java.util.UUID;
 @Data
 public class CommentResponse {
     private UUID commentId;
-    private UUID userId;
+    private UUID accountId;
 
     @JsonProperty("full_name")
     private String fullName;

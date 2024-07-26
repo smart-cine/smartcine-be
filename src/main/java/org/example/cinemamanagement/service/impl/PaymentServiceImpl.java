@@ -1,17 +1,16 @@
 package org.example.cinemamanagement.service.impl;
 
 import org.example.cinemamanagement.dto.PaymentDTO;
+import org.example.cinemamanagement.model.Account;
 import org.example.cinemamanagement.model.Cinema;
 import org.example.cinemamanagement.model.Payment;
 import org.example.cinemamanagement.model.PickSeat;
-import org.example.cinemamanagement.model.User;
 import org.example.cinemamanagement.payload.request.AddPaymentRequest;
 import org.example.cinemamanagement.repository.CinemaRepository;
 import org.example.cinemamanagement.repository.PaymentRepository;
 import org.example.cinemamanagement.repository.PickSeatRepository;
 import org.example.cinemamanagement.repository.UserRepository;
 import org.example.cinemamanagement.service.PaymentService;
-import org.example.cinemamanagement.service.SeatPaymentService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,8 +32,6 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private PickSeatRepository pickSeatRepository;
 
-    @Autowired
-    private SeatPaymentService seatPaymentService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -50,8 +47,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public String addPayment(AddPaymentRequest req) {
-        User userTemp = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findById(userTemp.getId()).orElseThrow(
+        Account accountTemp = (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Account account = userRepository.findById(accountTemp.getId()).orElseThrow(
                 () -> new RuntimeException("User not found")
         );
 
@@ -67,13 +64,12 @@ public class PaymentServiceImpl implements PaymentService {
             throw new RuntimeException("Error payment (amount is NULL)");
 
         Payment payment = new Payment();
-        payment.setUser(user);
+        payment.setAccount(account);
 //        payment.setCinema(cinema);
 //        payment.setAmount(req.getAmount());
         UUID paymentId = paymentRepository.save(payment).getId();
         System.out.print(paymentId);
 
-        seatPaymentService.addListSeatOfPayment(paymentId, req.getPickSeats());
         return "Successfully";
     }
 }

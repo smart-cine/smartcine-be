@@ -1,5 +1,6 @@
 package org.example.cinemamanagement.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,10 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CinemaDTO {
-    private UUID id;
-    private String variant;
-    private String name;
+    UUID id;
+    String name;
+    String address;
+
+    @JsonProperty("provider_id")
+    UUID providerId;
 }

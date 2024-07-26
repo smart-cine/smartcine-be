@@ -4,7 +4,6 @@ import org.example.cinemamanagement.dto.CinemaDTO;
 import org.example.cinemamanagement.model.Cinema;
 import org.example.cinemamanagement.payload.request.AddCinemaRequest;
 import org.example.cinemamanagement.payload.response.DataResponse;
-import org.example.cinemamanagement.service.CinemaManagerService;
 import org.example.cinemamanagement.service.CinemaService;
 import org.example.cinemamanagement.pagination.CursorBasedPageable;
 import org.example.cinemamanagement.payload.response.PageResponse;
@@ -25,8 +24,6 @@ public class CinemaController {
     @Autowired
     private CinemaService cinemaService;
 
-    @Autowired
-    private CinemaManagerService cinemaManagerService;
 
     @GetMapping
     public ResponseEntity<?> getAllCinema(
@@ -81,13 +78,4 @@ public class CinemaController {
         return ResponseEntity.status(HttpStatus.OK).body(dataResponse);
     }
 
-    @GetMapping("/{id}/managers")
-    public ResponseEntity<?> getAllManagerFromCinema(@PathVariable(name = "id") UUID id) {
-
-        DataResponse dataResponse = new DataResponse();
-        dataResponse.setMessage("Get all manager from cinema successfully");
-        dataResponse.setData(cinemaManagerService.getAllCinemaManagerFromCinema(id));
-
-        return ResponseEntity.ok(dataResponse);
-    }
 }

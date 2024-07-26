@@ -38,4 +38,7 @@ public class FilmDTO {
     private String language;
 
     private List<String> tags;
+
+    @JsonProperty("provider_id")
+     private UUID cinemaProviderId;
 }

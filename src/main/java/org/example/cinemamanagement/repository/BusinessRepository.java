@@ -1,6 +1,6 @@
 package org.example.cinemamanagement.repository;
 
-import org.example.cinemamanagement.model.User;
+import org.example.cinemamanagement.model.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface BusinessRepository extends JpaRepository<User, UUID> {
+public interface BusinessRepository extends JpaRepository<Account, UUID> {
 
     String sql1 = """
                         SELECT c.variant, c.name, Sum(p.amount) AS total

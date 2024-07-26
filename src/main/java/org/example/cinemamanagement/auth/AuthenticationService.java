@@ -3,8 +3,8 @@ package org.example.cinemamanagement.auth;
 import lombok.RequiredArgsConstructor;
 import org.example.cinemamanagement.common.Role;
 import org.example.cinemamanagement.configuration.JwtService;
-import org.example.cinemamanagement.mapper.UserMapper;
-import org.example.cinemamanagement.model.User;
+import org.example.cinemamanagement.mapper.AccountMapper;
+import org.example.cinemamanagement.model.Account;
 import org.example.cinemamanagement.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,7 +26,7 @@ public class AuthenticationService {
             throw new RuntimeException("User with email " + request.getEmail() + " already exists");
         });
 
-        var user = User.builder()
+        var user = Account.builder()
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -37,7 +37,7 @@ public class AuthenticationService {
         return AuthenticationResponse
                 .builder()
                 .token(jwtToken)
-                .user(UserMapper.toDTO(user))
+                .user(AccountMapper.toDTO(user))
                 .build();
     }
 
@@ -58,7 +58,7 @@ public class AuthenticationService {
         return AuthenticationResponse
                 .builder()
                 .token(jwtToken)
-                .user(UserMapper.toDTO(user))
+                .user(AccountMapper.toDTO(user))
                 .build();
 
     }

@@ -14,28 +14,24 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "tag")
+@Table(name = "Tag", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "name")
+})
 public class Tag {
-    @Id
-    @GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID id;
 
-    @Column(name = "name")
+//    @GeneratedValue(generator = "uuid2")
+//    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+//    @Column(columnDefinition = "BINARY(16)")
+//    private UUID id;
+
+    @Id
     private String name;
 
     @JsonIgnore
-    @ManyToMany(cascade = {
+    @ManyToMany(mappedBy = "tags", cascade = {
             CascadeType.PERSIST,
             CascadeType.MERGE,
             CascadeType.DETACH
     }, fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "m2m_film_tag",
-            joinColumns = @JoinColumn(name = "tag_id"),
-            inverseJoinColumns = @JoinColumn(name = "film_id")
-    )
     private List<Film> films;
-
 }

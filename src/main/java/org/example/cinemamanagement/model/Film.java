@@ -41,6 +41,9 @@ public class Film {
     @Column(name = "picture_url")
     private String pictureUrl;
 
+    @Column(name = "background_url")
+    private String backgroundUrl;
+
     @Column(name = "trailer_url")
     private String trailerUrl;
 
@@ -63,7 +66,7 @@ public class Film {
             CascadeType.DETACH
     }, fetch = FetchType.LAZY)
     @JoinTable(
-            name = "m2m_film_tag",
+            name = "_film_tag",
             joinColumns = @JoinColumn(name = "film_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
@@ -72,5 +75,13 @@ public class Film {
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "film")
     private List<Perform> performs;
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.PERSIST,
+            CascadeType.REFRESH
+    })
+    private CinemaProvider cinemaProvider;
 
 }

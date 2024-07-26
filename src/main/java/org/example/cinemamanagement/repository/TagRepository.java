@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface TagRepository extends JpaRepository<Tag, UUID>, JpaSpecificationExecutor<Tag> {
+public interface TagRepository extends JpaRepository<Tag, String>, JpaSpecificationExecutor<Tag> {
     public Boolean existsTagByName(String name);
     public Optional<Tag> findTagByName(String name);
 }

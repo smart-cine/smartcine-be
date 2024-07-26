@@ -2,9 +2,11 @@ package org.example.cinemamanagement.service.impl;
 
 import org.example.cinemamanagement.dto.FilmDTO;
 import org.example.cinemamanagement.mapper.FilmMapper;
+import org.example.cinemamanagement.model.CinemaProvider;
 import org.example.cinemamanagement.model.Film;
 import org.example.cinemamanagement.model.Tag;
 import org.example.cinemamanagement.payload.request.AddFilmRequest;
+import org.example.cinemamanagement.repository.CinemaProviderRepository;
 import org.example.cinemamanagement.repository.FilmRepository;
 import org.example.cinemamanagement.repository.TagRepository;
 import org.example.cinemamanagement.service.FilmService;
@@ -25,10 +27,13 @@ public class FilmServiceImpl implements FilmService {
     TagRepository tagRepository;
     FilmRepository filmRepository;
 
+    CinemaProviderRepository cinemaProviderRepository;
+
     @Autowired
-    public FilmServiceImpl(TagRepository tagRepository, FilmRepository filmRepository) {
+    public FilmServiceImpl(TagRepository tagRepository, FilmRepository filmRepository, CinemaProviderRepository cinemaProviderRepository) {
         this.tagRepository = tagRepository;
         this.filmRepository = filmRepository;
+        this.cinemaProviderRepository = cinemaProviderRepository;
     }
 
     @Override
@@ -45,6 +50,11 @@ public class FilmServiceImpl implements FilmService {
             throw new RuntimeException("Film already exists");
         }
 
+        Optional<CinemaProvider> cinemaProvider = cinemaProviderRepository.findById(addFilmRequest.getCinemaProviderId());
+
+        if (cinemaProvider.isEmpty()) {
+            throw new RuntimeException("Cinema provider id is invalid");
+        }
 
         Film tempFilm = filmRepository.save(Film.builder()
                 .title(addFilmRequest.getTitle())
@@ -57,9 +67,11 @@ public class FilmServiceImpl implements FilmService {
                 .duration(addFilmRequest.getDuration())
                 .description(addFilmRequest.getDescription())
                 .language(addFilmRequest.getLanguage())
+                .backgroundUrl(addFilmRequest.getBackgroundUrl())
+                .cinemaProvider(cinemaProvider.get())
                 .tags(addFilmRequest.getTags().stream()
                         .map(tagName -> {
-                            Optional<Tag> tempTag = tagRepository.findTagByName(tagName);
+                            Optional<Tag> tempTag = tagRepository.findById(tagName);
                             if (tempTag.isEmpty()) {
                                 Tag tag = Tag.builder()
                                         .name(tagName)
@@ -69,6 +81,7 @@ public class FilmServiceImpl implements FilmService {
                             return tempTag.get();
                         }).toList())
                 .build());
+
 
         return FilmMapper.toDTO(tempFilm);
     }

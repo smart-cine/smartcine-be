@@ -6,6 +6,7 @@ import org.example.cinemamanagement.dto.TagDTO;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class AddFilmRequest {
@@ -24,4 +25,11 @@ public class AddFilmRequest {
     private Integer duration;
     private String description;
     private String language;
+    @JsonProperty("background_url")
+    private String backgroundUrl;
+
+    @JsonProperty("provider_id")
+    private UUID cinemaProviderId;
+
+
 }

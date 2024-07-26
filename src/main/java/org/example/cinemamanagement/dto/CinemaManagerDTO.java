@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.cinemamanagement.model.Account;
 import org.example.cinemamanagement.model.Cinema;
-import org.example.cinemamanagement.model.User;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 public class CinemaManagerDTO {
     @JsonProperty("cinema_manager")
-    private User user;
+    private Account account;
     @JsonProperty("cinemas")
     private List<Cinema> cinemas;
 }

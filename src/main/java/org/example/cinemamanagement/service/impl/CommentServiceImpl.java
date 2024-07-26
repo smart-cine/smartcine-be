@@ -1,9 +1,9 @@
 package org.example.cinemamanagement.service.impl;
 
 import org.example.cinemamanagement.dto.CommentDTO;
+import org.example.cinemamanagement.model.Account;
 import org.example.cinemamanagement.model.Comment;
 import org.example.cinemamanagement.model.Film;
-import org.example.cinemamanagement.model.User;
 import org.example.cinemamanagement.payload.request.AddCommentRequest;
 import org.example.cinemamanagement.payload.response.CommentResponse;
 import org.example.cinemamanagement.repository.CommentRepository;
@@ -34,49 +34,18 @@ public class CommentServiceImpl implements CommentService {
     // Fix.
     @Override
     public List<CommentResponse> getAllCommentsOfFilmWithoutCommentOfCurrentUser(UUID filmID) {
-//        List<Comment> comments = commentRepository
-//                .findAllCommentByFilmIdAndExceptForUserId(commentDTO.getFilmId(), commentDTO.getUserId());
-//        return comments.stream()
-//                .map(comment -> CommentResponse.builder()
-//                        // Khong can tra ve commentId va userId
-//                        .fullName(comment.getUser().getLastName() + " " + comment.getUser().getFirstName())
-//                        .comment(comment.getBody())
-//                        .build()
-//                ).collect(Collectors.toList());
-
-        // Fix
-
-        User userTemp = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findById(userTemp.getId()).orElseThrow(
-                () -> new RuntimeException("User not found")
-        );
-
-        List<Comment> comments = commentRepository.findAllByFilmIdWithoutOfUser(filmID, user.getId());
-        return comments.stream().map(
-                comment -> CommentResponse.builder()
-                        .commentId(comment.getId())
-//                        .fullName(comment.getUser().getLastName() + " " + comment.getUser().getFirstName())
-                        .comment(comment.getBody())
-                        .build()
-        ).toList();
+        return null;
     }
 
     @Override
     public List<CommentResponse> getCommentByFilmIdAndUserId(CommentDTO commentDTO) {
-        List<Comment> comments = commentRepository.findCommentByFilmIdAndUserId(commentDTO.getFilmId(), commentDTO.getUserId());
-        return comments.stream()
-                .map(comment -> CommentResponse.builder()
-                        .commentId(comment.getId()) // Tra them ve commentId de sua va xoa
-//                        .fullName(comment.getUser().getLastName() + " " + comment.getUser().getFirstName())
-                        .comment(comment.getBody())
-                        .build()
-                ).collect(Collectors.toList());
+        return null;
     }
 
     @Override
     public String addComment(AddCommentRequest addCommentRequest) {
-        User userTemp = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepository.findById(userTemp.getId()).orElseThrow(
+        Account accountTemp = (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Account account = userRepository.findById(accountTemp.getId()).orElseThrow(
                 () -> new RuntimeException("User not found")
         );
 
@@ -87,7 +56,7 @@ public class CommentServiceImpl implements CommentService {
         }
 
         commentRepository.save(Comment.builder()
-                .user(user)
+                .account(account)
                 .body(addCommentRequest.getBody())
                 .film(film)
                 .build()

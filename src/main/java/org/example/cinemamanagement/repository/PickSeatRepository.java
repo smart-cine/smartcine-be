@@ -13,8 +13,7 @@ import java.util.UUID;
 
 @Repository
 public interface PickSeatRepository extends JpaRepository<PickSeat, UUID> {
-    @Query("SELECT p FROM PickSeat p WHERE p.user.id= ?1")
-    List<PickSeat> findByUserId(UUID userID);
+    List<PickSeat> findByAccountId(UUID accountId);
 
 
     List<PickSeat> findByPerformId(UUID performId);

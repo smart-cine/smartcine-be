@@ -16,6 +16,8 @@ public class FilmMapper {
         TypeMap<Film, FilmDTO> typeMap = new ModelMapper().createTypeMap(Film.class, FilmDTO.class);
         FilmDTO filmDTO = typeMap.map(film);
 
+        filmDTO.setCinemaProviderId(film.getCinemaProvider().getId());
+
         filmDTO.setTags(film.getTags().stream().map(Tag::getName)
                 .collect(Collectors.toList()));
 
