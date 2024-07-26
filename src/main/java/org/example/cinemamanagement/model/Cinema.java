@@ -21,19 +21,13 @@ public class Cinema {
     @OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     List<CinemaRoom> cinemaRooms;
 
-
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
-
-    @Column(name = "address")
     private String address;
-
-    @Column(name = "name")
     private String name;
-
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER, cascade = {
             CascadeType.DETACH,
@@ -43,7 +37,6 @@ public class Cinema {
     )
     @JoinColumn(name = "provider_id")
     private CinemaProvider cinemaProvider;
-
 
     @JsonIgnore
     @ManyToMany(cascade = {

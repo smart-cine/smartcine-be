@@ -19,4 +19,7 @@ public class CinemaDTO {
 
     @JsonProperty("provider_id")
     UUID providerId;
+
+    @JsonProperty("manager_id")
+    UUID managerId;
 }

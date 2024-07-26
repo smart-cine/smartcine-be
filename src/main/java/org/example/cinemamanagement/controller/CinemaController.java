@@ -36,25 +36,21 @@ public class CinemaController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCinema(@PathVariable(name = "id") UUID id) {
-        DataResponse dataRes = DataResponse.builder()
-                .message("Get cinema successfully")
+    public ResponseEntity<DataResponse<CinemaDTO>> getCinema(@PathVariable(name = "id") UUID id) {
+        return ResponseEntity.ok(DataResponse.<CinemaDTO>builder()
                 .data(cinemaService.getCinema(id))
+                .message("Get cinema successfully")
                 .success(true)
-                .build();
-
-        return ResponseEntity.ok(dataRes);
+                .build());
     }
 
     @PostMapping
-    public ResponseEntity<?> addCinema(@RequestBody AddCinemaRequest addCinemaRequest) {
-
-        DataResponse dataResponse = DataResponse.builder()
-                .message("Add cinema successfully")
+    public ResponseEntity<DataResponse<CinemaDTO>> addCinema(@RequestBody AddCinemaRequest addCinemaRequest) {
+        return ResponseEntity.ok(DataResponse.<CinemaDTO>builder()
                 .data(cinemaService.addCinema(addCinemaRequest))
-                .build();
-
-        return ResponseEntity.ok(dataResponse);
+                .message("Add cinema successfully")
+                .success(true)
+                .build());
     }
 
     @PatchMapping("/{id}")

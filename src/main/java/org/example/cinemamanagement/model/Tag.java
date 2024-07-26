@@ -3,10 +3,8 @@ package org.example.cinemamanagement.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Getter
@@ -19,11 +17,6 @@ import java.util.UUID;
 })
 public class Tag {
 
-//    @GeneratedValue(generator = "uuid2")
-//    @GenericGenerator(name = "uuid2", strategy = "uuid2")
-//    @Column(columnDefinition = "BINARY(16)")
-//    private UUID id;
-
     @Id
     private String name;
 
@@ -34,4 +27,5 @@ public class Tag {
             CascadeType.DETACH
     }, fetch = FetchType.LAZY)
     private List<Film> films;
+
 }
