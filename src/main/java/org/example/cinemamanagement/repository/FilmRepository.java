@@ -12,6 +12,4 @@ import java.util.UUID;
 public interface FilmRepository extends JpaRepository<Film, UUID>, JpaSpecificationExecutor<Film> {
     public Boolean existsFilmByTitle(String title);
 
-    @Query("select f from Film f where f.title < ?1 order by f.title desc limit 1")
-    public Optional<Film> theFirstFilmBehindCurrFilm(String title);
 }

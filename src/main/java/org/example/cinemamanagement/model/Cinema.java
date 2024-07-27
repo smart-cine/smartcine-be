@@ -45,7 +45,7 @@ public class Cinema {
             CascadeType.PERSIST,
             CascadeType.REFRESH
     }, fetch = FetchType.LAZY)
-    @JoinTable(name = "_CinemaManager",
+    @JoinTable(name = "_cinema_manager",
             joinColumns = @JoinColumn(name = "cinema_id"),
             inverseJoinColumns = @JoinColumn(name = "manager_id"))
     private List<ManagerAccount> managerAccounts;

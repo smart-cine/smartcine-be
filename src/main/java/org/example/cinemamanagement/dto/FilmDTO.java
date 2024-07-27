@@ -41,4 +41,7 @@ public class FilmDTO {
 
     @JsonProperty("provider_id")
      private UUID cinemaProviderId;
+
+    @JsonProperty("manager_id")
+    private UUID managerId;
 }

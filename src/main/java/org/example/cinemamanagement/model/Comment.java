@@ -45,6 +45,5 @@ public class Comment {
     @Enumerated(EnumType.STRING)
     private CommentType commentType;
 
-    @Column(name = "body")
     private String body;
 }

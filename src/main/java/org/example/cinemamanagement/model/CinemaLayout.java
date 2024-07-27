@@ -33,7 +33,6 @@ public class CinemaLayout {
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @Column(name = "data")
     private String data;
 
     @Column(name = "type")

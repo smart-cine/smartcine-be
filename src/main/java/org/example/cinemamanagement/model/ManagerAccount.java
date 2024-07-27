@@ -1,5 +1,6 @@
 package org.example.cinemamanagement.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -28,17 +29,22 @@ public class ManagerAccount {
             inverseJoinColumns = @JoinColumn(name = "id"))
     private Account account;
 
-    @ManyToMany(cascade =
-            {
-                    CascadeType.DETACH,
-                    CascadeType.MERGE,
-                    CascadeType.PERSIST,
-                    CascadeType.REFRESH
-            }, fetch = FetchType.LAZY)
-    @JoinTable(name = "_CinemaManager",
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.PERSIST,
+            CascadeType.REFRESH
+    })
+    @JoinTable(name = "_cinema_manager",
             joinColumns = @JoinColumn(name = "manager_id"),
             inverseJoinColumns = @JoinColumn(name = "cinema_id"))
     private List<Cinema> cinemas;
+
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "managerAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Film> films;
+
 
 
 }

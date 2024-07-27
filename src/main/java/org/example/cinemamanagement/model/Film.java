@@ -14,7 +14,7 @@ import java.util.UUID;
 @Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "film")
 public class Film {
     @Id
@@ -23,16 +23,13 @@ public class Film {
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @Column(name = "title")
     private String title;
 
-    @Column(name = "director")
     private String director;
 
     @Column(name = "release_date")
     private Timestamp releaseDate;
 
-    @Column(name = "country")
     private String country;
 
     @Column(name = "restrict_age")
@@ -47,13 +44,9 @@ public class Film {
     @Column(name = "trailer_url")
     private String trailerUrl;
 
-    @Column(name = "duration")
     private Integer duration;
-
-    @Column(name = "description")
     private String description;
 
-    @Column(name = "language")
     private String language;
 
     @JsonIgnore
@@ -83,5 +76,14 @@ public class Film {
             CascadeType.REFRESH
     })
     private CinemaProvider cinemaProvider;
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.PERSIST,
+            CascadeType.REFRESH
+    })
+    @JoinColumn(name = "manager_id")
+    private ManagerAccount managerAccount;
 
 }

@@ -1,5 +1,6 @@
 package org.example.cinemamanagement.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -30,10 +31,11 @@ public class CinemaProvider {
     @Column(name = "background_url")
     private String backgroundUrl;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "cinemaProvider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Cinema> cinemas;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "cinemaProvider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Film> films;
-
 }

@@ -2,6 +2,8 @@ package org.example.cinemamanagement.payload.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.example.cinemamanagement.dto.TagDTO;
 
 import java.sql.Timestamp;
@@ -9,6 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
+@RequiredArgsConstructor
 public class AddFilmRequest {
     private String title;
     private String director;
@@ -31,5 +34,6 @@ public class AddFilmRequest {
     @JsonProperty("provider_id")
     private UUID cinemaProviderId;
 
-
+    @JsonProperty("manager_id")
+    private UUID managerId;
 }

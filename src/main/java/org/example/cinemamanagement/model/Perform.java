@@ -17,7 +17,7 @@ import java.util.UUID;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "Perform")
+@Table(name = "perform")
 public class Perform {
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -65,6 +65,5 @@ public class Perform {
     @Column(name = "end_time")
     private Timestamp endTime;
 
-    @Column(name = "price")
     private Double price;
 }

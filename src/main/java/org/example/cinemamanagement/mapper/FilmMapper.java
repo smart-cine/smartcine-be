@@ -17,6 +17,7 @@ public class FilmMapper {
         FilmDTO filmDTO = typeMap.map(film);
 
         filmDTO.setCinemaProviderId(film.getCinemaProvider().getId());
+        filmDTO.setManagerId(film.getManagerAccount().getId());
 
         filmDTO.setTags(film.getTags().stream().map(Tag::getName)
                 .collect(Collectors.toList()));

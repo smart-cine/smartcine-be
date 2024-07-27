@@ -4,10 +4,12 @@ import org.example.cinemamanagement.dto.FilmDTO;
 import org.example.cinemamanagement.mapper.FilmMapper;
 import org.example.cinemamanagement.model.CinemaProvider;
 import org.example.cinemamanagement.model.Film;
+import org.example.cinemamanagement.model.ManagerAccount;
 import org.example.cinemamanagement.model.Tag;
 import org.example.cinemamanagement.payload.request.AddFilmRequest;
 import org.example.cinemamanagement.repository.CinemaProviderRepository;
 import org.example.cinemamanagement.repository.FilmRepository;
+import org.example.cinemamanagement.repository.ManagerAccountRepository;
 import org.example.cinemamanagement.repository.TagRepository;
 import org.example.cinemamanagement.service.FilmService;
 import org.example.cinemamanagement.utils.ConvertJsonNameToTypeName;
@@ -26,14 +28,17 @@ import java.util.stream.Collectors;
 public class FilmServiceImpl implements FilmService {
     TagRepository tagRepository;
     FilmRepository filmRepository;
-
     CinemaProviderRepository cinemaProviderRepository;
 
+    ManagerAccountRepository managerAccountRepository;
+
+
     @Autowired
-    public FilmServiceImpl(TagRepository tagRepository, FilmRepository filmRepository, CinemaProviderRepository cinemaProviderRepository) {
+    public FilmServiceImpl(TagRepository tagRepository, FilmRepository filmRepository, CinemaProviderRepository cinemaProviderRepository, ManagerAccountRepository managerAccountRepository) {
         this.tagRepository = tagRepository;
         this.filmRepository = filmRepository;
         this.cinemaProviderRepository = cinemaProviderRepository;
+        this.managerAccountRepository = managerAccountRepository;
     }
 
     @Override
@@ -49,12 +54,17 @@ public class FilmServiceImpl implements FilmService {
         if (checkExistence) {
             throw new RuntimeException("Film already exists");
         }
-
         Optional<CinemaProvider> cinemaProvider = cinemaProviderRepository.findById(addFilmRequest.getCinemaProviderId());
+        Optional<ManagerAccount> managerAccount = managerAccountRepository.findById(addFilmRequest.getManagerId());
 
         if (cinemaProvider.isEmpty()) {
             throw new RuntimeException("Cinema provider id is invalid");
         }
+
+        if (managerAccount.isEmpty()) {
+            throw new RuntimeException("Manager id is invalid");
+        }
+
 
         Film tempFilm = filmRepository.save(Film.builder()
                 .title(addFilmRequest.getTitle())
@@ -69,6 +79,7 @@ public class FilmServiceImpl implements FilmService {
                 .language(addFilmRequest.getLanguage())
                 .backgroundUrl(addFilmRequest.getBackgroundUrl())
                 .cinemaProvider(cinemaProvider.get())
+                .managerAccount(managerAccount.get())
                 .tags(addFilmRequest.getTags().stream()
                         .map(tagName -> {
                             Optional<Tag> tempTag = tagRepository.findById(tagName);
@@ -136,7 +147,7 @@ public class FilmServiceImpl implements FilmService {
         }
 
         List<Film> films = filmSlide.getContent();
-        pagingMap.put("previousPageCursor", cursorBasedPageable.getEncodedCursor(films.get(0).getTitle(), hasPreviousPage(films.get(0))));
+        pagingMap.put("previousPageCursor", cursorBasedPageable.getEncodedCursor(films.get(0).getTitle(), filmSlide.hasPrevious()));
         pagingMap.put("nextPageCursor", cursorBasedPageable.getEncodedCursor(films.get(films.size() - 1).getTitle(), filmSlide.hasNext()));
         pagingMap.put("size", String.valueOf(cursorBasedPageable.getSize()));
         pagingMap.put("total", String.valueOf(filmSlide.getTotalElements()));
@@ -144,11 +155,6 @@ public class FilmServiceImpl implements FilmService {
         return new PageResponse<>(true, films.stream()
                 .map(FilmMapper::toDTO).collect(Collectors.toList()),
                 pagingMap);
-    }
-
-    private Boolean hasPreviousPage(Film firstFilm) {
-        Optional<Film> tempFilm = filmRepository.theFirstFilmBehindCurrFilm(firstFilm.getTitle());
-        return tempFilm.isPresent();
     }
 
     private String buildSQLQuery(Map<String, String> paramsString) {

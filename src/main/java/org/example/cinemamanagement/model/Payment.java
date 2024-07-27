@@ -51,7 +51,6 @@ public class Payment {
             CascadeType.REFRESH})
     private Item item;
 
-    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private Status status;
 
