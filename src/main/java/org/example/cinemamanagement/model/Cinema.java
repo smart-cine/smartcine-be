@@ -28,7 +28,6 @@ public class Cinema {
     private UUID id;
     private String address;
     private String name;
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER, cascade = {
             CascadeType.DETACH,
             CascadeType.MERGE,
@@ -38,7 +37,6 @@ public class Cinema {
     @JoinColumn(name = "provider_id")
     private CinemaProvider cinemaProvider;
 
-    @JsonIgnore
     @ManyToMany(cascade = {
             CascadeType.DETACH,
             CascadeType.MERGE,

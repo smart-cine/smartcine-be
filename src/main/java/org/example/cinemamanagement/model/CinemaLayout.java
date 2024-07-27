@@ -40,6 +40,16 @@ public class CinemaLayout {
     private LayoutType layoutType;
 
 
+    @ManyToOne( fetch = FetchType.LAZY, cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.PERSIST,
+            CascadeType.REFRESH
+    })
+    @JoinColumn(name = "manager_id")
+    private ManagerAccount managerAccount;
+
+
     public void addCinemaRoom(CinemaRoom cinemaRoom) {
         if (this.cinemaRooms == null) {
             this.cinemaRooms = new ArrayList<>();

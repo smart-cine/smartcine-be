@@ -7,11 +7,9 @@ import org.example.cinemamanagement.mapper.CinemaLayoutMapper;
 import org.example.cinemamanagement.mapper.CinemaMapper;
 import org.example.cinemamanagement.model.Cinema;
 import org.example.cinemamanagement.model.Account;
+import org.example.cinemamanagement.model.ManagerAccount;
 import org.example.cinemamanagement.payload.request.AddCinemaRequest;
-import org.example.cinemamanagement.repository.CinemaLayoutRepository;
-import org.example.cinemamanagement.repository.CinemaProviderRepository;
-import org.example.cinemamanagement.repository.CinemaRepository;
-import org.example.cinemamanagement.repository.UserRepository;
+import org.example.cinemamanagement.repository.*;
 import org.example.cinemamanagement.service.CinemaService;
 import org.example.cinemamanagement.utils.ConvertJsonNameToTypeName;
 import org.example.cinemamanagement.pagination.CursorBasedPageable;
@@ -33,11 +31,14 @@ public class CinemaServiceImpl implements CinemaService {
     CinemaLayoutRepository cinemaLayoutRepository;
     CinemaProviderRepository cinemaProviderRepository;
 
-    CinemaServiceImpl(CinemaRepository cinemaRepository, UserRepository userRepository, CinemaLayoutRepository cinemaLayoutRepository, CinemaProviderRepository cinemaProviderRepository) {
+    ManagerAccountRepository managerAccountRepository;
+
+    CinemaServiceImpl(CinemaRepository cinemaRepository, UserRepository userRepository, CinemaLayoutRepository cinemaLayoutRepository, CinemaProviderRepository cinemaProviderRepository, ManagerAccountRepository managerAccountRepository) {
         this.cinemaRepository = cinemaRepository;
         this.userRepository = userRepository;
         this.cinemaLayoutRepository = cinemaLayoutRepository;
         this.cinemaProviderRepository = cinemaProviderRepository;
+        this.managerAccountRepository = managerAccountRepository;
     }
 
     @Override
@@ -58,15 +59,21 @@ public class CinemaServiceImpl implements CinemaService {
     // check
     @Override
     public CinemaDTO addCinema(AddCinemaRequest addCinemaRequest) {
+
         Cinema cinema = Cinema.builder()
                 .name(addCinemaRequest.getName())
                 .address(addCinemaRequest.getAddress())
-                .cinemaProvider(cinemaProviderRepository.findById(addCinemaRequest
-                                .getProviderId()
-                        )
+                .cinemaProvider(cinemaProviderRepository.findById(addCinemaRequest.getProviderId())
                         .orElseThrow(() ->
                                 new RuntimeException("Cinema Provider not found with id: " +
                                         addCinemaRequest.getProviderId())))
+                .managerAccounts(
+                        addCinemaRequest.getManagerIds().stream()
+                                .map(id -> managerAccountRepository.findById(id)
+                                        .orElseThrow(() ->
+                                                new RuntimeException("Manager Account not found with id: " + id)))
+                                .collect(Collectors.toList())
+                )
                 .build();
 
         cinemaRepository.save(cinema);

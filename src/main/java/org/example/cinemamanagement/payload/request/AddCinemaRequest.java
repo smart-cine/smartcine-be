@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -13,6 +14,6 @@ public class AddCinemaRequest {
     private String name;
     @JsonProperty("provider_id")
     private UUID providerId;
-    @JsonProperty("manager_id")
-    private UUID managerId;
+    @JsonProperty("manager_ids")
+    private List<UUID> managerIds;
 }

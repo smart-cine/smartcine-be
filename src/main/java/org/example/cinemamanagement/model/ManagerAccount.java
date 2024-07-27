@@ -46,5 +46,8 @@ public class ManagerAccount {
     private List<Film> films;
 
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "managerAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CinemaLayout> cinemaLayouts;
 
 }

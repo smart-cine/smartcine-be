@@ -53,6 +53,17 @@ public class CinemaProviderController {
                 .build());
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<DataResponse<Void>> updateCinemaProvider(@PathVariable UUID id, @RequestBody CinemaProviderDTO cinemaProviderDTO )
+    {
+        cinemaProviderService.updateCinemaProvider(id, cinemaProviderDTO);
+
+        return ResponseEntity.ok(DataResponse.<Void>builder()
+                .success(true)
+                .message("Success")
+                .build());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<DataResponse<Void>> deleteCinemaProvider(@PathVariable UUID id) {
         cinemaProviderService.deleteCinemaProvider(id);
@@ -61,4 +72,5 @@ public class CinemaProviderController {
                 .message("Success")
                 .build());
     }
+
 }

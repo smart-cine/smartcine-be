@@ -14,4 +14,6 @@ public interface CinemaProviderService {
     CinemaProviderDTO saveCinemaProvider(CinemaProviderDTO cinemaProviderDTO);
 
     void deleteCinemaProvider(UUID id);
+
+    void updateCinemaProvider(UUID id, CinemaProviderDTO cinemaProviderDTO);
 }
