@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -41,9 +40,12 @@ public class CinemaLayoutServiceImpl implements CinemaLayoutService {
     @Override
     @Transactional
     public CinemaLayoutDTO addCinemaLayout(AddCinemaLayoutRequest cinemaLayoutRequest) {
+
+
         CinemaLayout layout = CinemaLayout.builder()
-                .data(cinemaLayoutRequest.getData())
-                .layoutType(cinemaLayoutRequest.getLayoutType())
+                .columns(cinemaLayoutRequest.getColumns())
+                .rows(cinemaLayoutRequest.getRows())
+                .managerAccount(null)
                 .build();
 
         cinemaLayoutRepository.save(layout);
@@ -77,7 +79,7 @@ public class CinemaLayoutServiceImpl implements CinemaLayoutService {
     @Override
     @Transactional
     public void deleteCinemaLayout(UUID id) {
-        CinemaLayout layout = cinemaLayoutRepository.findById(id)
+        cinemaLayoutRepository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException("Cinema layout not found with id: " + id));
 

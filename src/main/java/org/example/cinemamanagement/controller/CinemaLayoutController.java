@@ -1,6 +1,7 @@
 package org.example.cinemamanagement.controller;
 
 import org.example.cinemamanagement.dto.CinemaLayoutDTO;
+import org.example.cinemamanagement.model.CinemaLayout;
 import org.example.cinemamanagement.payload.request.AddCinemaLayoutRequest;
 import org.example.cinemamanagement.payload.response.DataResponse;
 import org.example.cinemamanagement.service.CinemaLayoutService;
@@ -29,6 +30,19 @@ public class CinemaLayoutController {
                 .builder()
                 .data(cinemaLayoutService.getAllCinemaLayout())
                 .message("Get all layout successfully")
+                .success(true)
+                .build();
+
+        return ResponseEntity.ok(dataResponse);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<DataResponse<CinemaLayoutDTO>> getLayout(@PathVariable UUID id) {
+
+        DataResponse<CinemaLayoutDTO> dataResponse = DataResponse
+                .<CinemaLayoutDTO>builder()
+                .data(cinemaLayoutService.getCinemaLayout(id))
+                .message("Get layout successfully")
                 .success(true)
                 .build();
 

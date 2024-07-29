@@ -6,6 +6,9 @@ import org.example.cinemamanagement.common.LayoutType;
 
 @Data
 public class AddCinemaLayoutRequest {
-    private LayoutType layoutType;
-    private String data;
+
+    @JsonProperty("manager_id")
+    private String managerId;
+    private Integer rows;
+    private Integer columns;
 }
