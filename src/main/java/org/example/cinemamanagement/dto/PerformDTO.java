@@ -34,4 +34,7 @@ public class PerformDTO {
     private Timestamp startTime;
     @JsonProperty("end_time")
     private Timestamp endTime;
+
+    @JsonProperty("manager_id")
+    private UUID managerId;
 }

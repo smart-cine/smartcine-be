@@ -25,19 +25,20 @@ import java.util.stream.Collectors;
 @Service
 public class PerformServiceImpl implements PerformService {
     PerformRepository performRepository;
-
     CinemaRoomRepository cinemaRoomRepository;
-
     FilmRepository filmRepository;
+    ManagerAccountRepository managerAccountRepository;
 
     @Autowired
     public PerformServiceImpl(PerformRepository performRepository,
                               CinemaRoomRepository cinemaRoomRepository,
-                              FilmRepository filmRepository
+                              FilmRepository filmRepository,
+                              ManagerAccountRepository managerAccountRepository
     ) {
         this.performRepository = performRepository;
         this.cinemaRoomRepository = cinemaRoomRepository;
         this.filmRepository = filmRepository;
+        this.managerAccountRepository = managerAccountRepository;
     }
 
     @Override
@@ -85,10 +86,14 @@ public class PerformServiceImpl implements PerformService {
         Film film = filmRepository.findById(addPerformRequest.getFilmId())
                 .orElseThrow(() -> new RuntimeException("Film not found"));
 
+        ManagerAccount managerAccount = managerAccountRepository.findById(addPerformRequest.getManagerId())
+                .orElseThrow(() -> new RuntimeException("Manager not found"));
+
 
         Perform perform = performRepository.save(
                 Perform.builder()
                         .film(film)
+                        .managerAccount(managerAccount)
                         .cinemaRoom(cinemaRoom)
                         .viewType(addPerformRequest.getViewType())
                         .translateType(addPerformRequest.getTranslateType())
@@ -106,8 +111,7 @@ public class PerformServiceImpl implements PerformService {
         Perform perform = performRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Perform not found with id: " + id));
 
-        for(Map.Entry<String, Object> dataSet : payload.entrySet())
-        {
+        for (Map.Entry<String, Object> dataSet : payload.entrySet()) {
             String key = dataSet.getKey();
             Object value = dataSet.getValue();
 

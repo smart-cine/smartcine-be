@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.example.cinemamanagement.common.Status;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.UUID;
 
@@ -39,11 +40,11 @@ public class Payment {
     private Perform perform;
 
 
-    @Column(name = "date_create")
-    private Date dateCreate;
+    @Column(name = "date_created")
+    private Timestamp dateCreate;
 
-    @Column(name = "date_expire")
-    private Date dateExpire;
+    @Column(name = "date_expired")
+    private Timestamp dateExpire;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH,
             CascadeType.MERGE,
@@ -53,9 +54,4 @@ public class Payment {
 
     @Enumerated(EnumType.STRING)
     private Status status;
-
-    @PrePersist
-    protected void onCreate() {   // create Date when dateCreate saved in db first time
-        dateCreate = new Date();
-    }
 }

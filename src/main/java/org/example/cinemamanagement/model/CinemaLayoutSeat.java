@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -38,6 +39,14 @@ public class CinemaLayoutSeat {
     })
     @JoinColumn(name = "layout_id")
     private CinemaLayout cinemaLayout;
+
+    @OneToMany(mappedBy = "layoutSeat", fetch = FetchType.LAZY, cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.PERSIST,
+            CascadeType.REFRESH
+    })
+    private List<PickSeat> pickSeats;
 
     private String code;
 

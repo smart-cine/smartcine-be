@@ -7,6 +7,7 @@ public class PerformMapper {
     public static PerformDTO toDTO(Perform perform) {
         return PerformDTO.builder()
                 .viewType(perform.getViewType())
+                .managerId(perform.getManagerAccount().getId())
                 .translateType(perform.getTranslateType())
                 .cinemaRoomId(perform.getCinemaRoom().getId())
                 .filmId(perform.getFilm().getId())

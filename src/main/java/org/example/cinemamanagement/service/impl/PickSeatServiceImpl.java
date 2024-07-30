@@ -3,13 +3,20 @@ package org.example.cinemamanagement.service.impl;
 import org.example.cinemamanagement.dto.PickSeatDTO;
 import org.example.cinemamanagement.mapper.PickSeatMapper;
 import org.example.cinemamanagement.model.Account;
+import org.example.cinemamanagement.model.CinemaLayoutSeat;
+import org.example.cinemamanagement.model.Perform;
+import org.example.cinemamanagement.model.PickSeat;
 import org.example.cinemamanagement.payload.request.DeletePickSeatRequest;
 import org.example.cinemamanagement.payload.request.PickSeatRequest;
+import org.example.cinemamanagement.payload.response.PickSeatResponse;
+import org.example.cinemamanagement.repository.CinemaLayoutSeatRepository;
 import org.example.cinemamanagement.repository.PerformRepository;
 import org.example.cinemamanagement.repository.PickSeatRepository;
 import org.example.cinemamanagement.repository.UserRepository;
 import org.example.cinemamanagement.service.PickSeatService;
+import org.example.cinemamanagement.service.SocketIOService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,63 +28,60 @@ import java.util.UUID;
 public class PickSeatServiceImpl implements PickSeatService {
     PickSeatRepository pickSeatRepository;
     PerformRepository performRepository;
-
+    CinemaLayoutSeatRepository cinemaLayoutSeatRepository;
     UserRepository userRepository;
+    SocketIOService socketIOService;
 
     @Autowired
-    public PickSeatServiceImpl(PickSeatRepository pickSeatRepository, PerformRepository performRepository, UserRepository userRepository) {
+    public PickSeatServiceImpl(PickSeatRepository pickSeatRepository, PerformRepository performRepository, UserRepository userRepository,
+                               CinemaLayoutSeatRepository cinemaLayoutSeatRepository,
+                               SocketIOService socketIOService
+    ) {
+
         this.pickSeatRepository = pickSeatRepository;
         this.performRepository = performRepository;
         this.userRepository = userRepository;
+        this.cinemaLayoutSeatRepository = cinemaLayoutSeatRepository;
+        this.socketIOService = socketIOService;
     }
 
     @Override
     @Transactional
-    public Object addPickSeat(List<PickSeatRequest> pickSeatRequests, UUID performId) {
-//        Perform perform = performRepository.findById(performId).orElseThrow(
-//                () -> new RuntimeException("Perform not found")
-//        );
-//
-//        User userTemp = (User) SecurityContextHolder.getContext()
-//                .getAuthentication()
-//                .getPrincipal();
-//
-//        User user = userRepository.findById(userTemp.getId()).orElseThrow(
-//                () -> new RuntimeException("User not found"));
-//
-//        pickSeatRequests.forEach(pickSeatRequest -> {
-//            if (pickSeatRepository.findByPerformIdAndXAndY(performId, pickSeatRequest.getX(), pickSeatRequest.getY()).isPresent()) {
-//                throw new RuntimeException("Seat already picked");
-//            }
-//
-//            if (pickSeatRequest.getX() < 0 || pickSeatRequest.getX() > perform.getCinemaRoom().getCinemaLayout().getXIndex() ||
-//                    pickSeatRequest.getY() < 0 || pickSeatRequest.getY() > perform.getCinemaRoom().getCinemaLayout().getYIndex()) {
-//                throw new RuntimeException("Seat out of range");
-//            }
-//
-//            PickSeat pickSeat = PickSeat.builder()
-//                    .perform(perform)
-//                    .user(user)
-//                    .x(pickSeatRequest.getX())
-//                    .y(pickSeatRequest.getY())
-//                    .build();
-//            pickSeatRepository.save(pickSeat);
-//        });
-//
-//        return Map.of("seats", pickSeatRequests.stream().map(pickSeatRequest -> {
-//            return SocketResponse.builder()
-//                    .x(pickSeatRequest.getX())
-//                    .y(pickSeatRequest.getY())
-//                    .build();
-//        }), "performID", performId);
+    public void addPickSeat(PickSeatRequest pickSeatRequest) {
+        Perform perform = performRepository.findById(pickSeatRequest.getPerformID()).orElseThrow(
+                () -> new RuntimeException("Perform not found")
+        );
 
-        return null;
+        Account account = (Account) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+
+        if (pickSeatRepository.findByLayoutSeatIdAndPerformId(pickSeatRequest.getLayoutSeatID(), pickSeatRequest.getPerformID()).isPresent()) {
+            throw new RuntimeException("Seat already picked");
+        }
+
+        PickSeat pickSeat = PickSeat.builder()
+                .perform(perform)
+                .account(userRepository.findById(account.getId()).get())
+                .layoutSeat(cinemaLayoutSeatRepository.findById(pickSeatRequest.getLayoutSeatID()).orElseThrow(
+                        () -> new RuntimeException("Seat not found")))
+                .build();
+
+        pickSeatRepository.save(pickSeat);
+        socketIOService.emit("post-pickseat", pickSeatRequest);
     }
 
+
     @Override
-    public List<PickSeatDTO> getAllSeatsPickedOfPerform(UUID performID) {
+    public List<PickSeatResponse> getAllSeatsPickedOfPerform(UUID performID) {
+        Perform perform = performRepository.findById(performID).orElseThrow(
+                () -> new RuntimeException("Perform not found")
+        );
+
         return pickSeatRepository.findByPerformId(performID).stream()
-                .map(PickSeatMapper::toDTO).toList();
+                .map(PickSeatMapper::toResponse)
+                .toList();
     }
 
     @Override
@@ -97,22 +101,23 @@ public class PickSeatServiceImpl implements PickSeatService {
     }
 
     @Override
-    public Object deletePickSeat(List<DeletePickSeatRequest> deletePickSeatRequests, UUID performID) {
-//        deletePickSeatRequests.forEach(deletePickSeatRequest -> {
-//            pickSeatRepository.deleteByXAndY(deletePickSeatRequest.getX(),
-//                    deletePickSeatRequest.getY(),
-//                    performID
-//            );
-//        });
+    @Transactional
+    public void deletePickSeat(PickSeatRequest deletePickSeatRequest) {
 
-//        return Map.of("seats", deletePickSeatRequests.stream().map(deletePickSeatRequest -> {
-//            return SocketResponse.builder()
-//                    .x(deletePickSeatRequest.getX())
-//                    .y(deletePickSeatRequest.getY())
-//                    .build();
-//        }).toList(), "performID", performID);
+        Account account = (Account) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
 
-        return null;
+        PickSeat pickSeat = pickSeatRepository.findByLayoutSeatIdAndPerformId(deletePickSeatRequest.getPerformID(), deletePickSeatRequest.getLayoutSeatID() ).orElseThrow(
+                () -> new RuntimeException("Seat not found"));
+
+        if (!pickSeat.getAccount().getId().equals(account.getId())) {
+            throw new RuntimeException("You can only delete your own picked seat");
+        }
+
+        pickSeatRepository.deleteByPerformIdAndSeatId(deletePickSeatRequest.getPerformID(), deletePickSeatRequest.getLayoutSeatID());
+        socketIOService.emit("delete-pickseat", deletePickSeatRequest);
+        return;
     }
 
 }

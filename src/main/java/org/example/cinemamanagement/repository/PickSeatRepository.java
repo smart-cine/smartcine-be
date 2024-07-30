@@ -21,4 +21,13 @@ public interface PickSeatRepository extends JpaRepository<PickSeat, UUID> {
 
     @Query("SELECT p FROM PickSeat p WHERE p.perform.id= ?1")
     List<PickSeat> findAllByPerformId(UUID performID);
+
+
+    @Query("SELECT p FROM PickSeat p WHERE p.perform.id= ?1 AND p.layoutSeat.id= ?2")
+    Optional<PickSeat> findByLayoutSeatIdAndPerformId(UUID performId, UUID layoutSeatId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM PickSeat p WHERE p.perform.id= ?1 AND p.layoutSeat.id= ?2")
+    void deleteByPerformIdAndSeatId(UUID performId, UUID seatId);
 }

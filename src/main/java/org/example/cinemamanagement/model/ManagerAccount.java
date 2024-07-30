@@ -50,4 +50,6 @@ public class ManagerAccount {
     @OneToMany(mappedBy = "managerAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CinemaLayout> cinemaLayouts;
 
+    @OneToMany(mappedBy = "managerAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Perform> performs;
 }

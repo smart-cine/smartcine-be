@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
 @Getter
@@ -38,5 +39,16 @@ public class PickSeat {
 
     @Column(name = "code")
     private String code;
+
+    @Column(name ="created_at")
+    private Timestamp createAt;
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.PERSIST,
+            CascadeType.REFRESH}
+    )
+    @JoinColumn(name = "layout_seat_id")
+    private CinemaLayoutSeat layoutSeat;
 
 }
