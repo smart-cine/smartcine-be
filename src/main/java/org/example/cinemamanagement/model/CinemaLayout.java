@@ -42,4 +42,10 @@ public class CinemaLayout {
     })
     @JoinColumn(name = "manager_id")
     private ManagerAccount managerAccount;
+
+    @OneToMany(mappedBy = "cinemaLayout", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CinemaLayoutGroup> cinemaLayoutGroups;
+
+    @OneToMany(mappedBy = "cinemaLayout", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CinemaLayoutSeat> cinemaLayoutSeats;
 }

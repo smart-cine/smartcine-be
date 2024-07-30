@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -13,8 +12,8 @@ import java.util.UUID;
 @Setter
 @Builder
 @Entity
-@Table(name = "cinemalayoutgroup")
-public class CinemaLayoutGroup {
+@Table(name = "cinemalayoutseat")
+public class CinemaLayoutSeat {
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -28,12 +27,19 @@ public class CinemaLayoutGroup {
             CascadeType.PERSIST,
             CascadeType.REFRESH
     })
+    @JoinColumn(name = "group_id")
+    private CinemaLayoutGroup cinemaLayoutGroup;
+
+    @ManyToOne( fetch = FetchType.LAZY, cascade = {
+            CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.PERSIST,
+            CascadeType.REFRESH
+    })
+    @JoinColumn(name = "layout_id")
     private CinemaLayout cinemaLayout;
 
-    private String name;
-    private Integer color;
-    private Double price;
+    private String code;
 
-    @OneToMany(mappedBy = "cinemaLayoutGroup", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<CinemaLayoutSeat> cinemaLayoutSeats;
+    private Boolean available;
 }

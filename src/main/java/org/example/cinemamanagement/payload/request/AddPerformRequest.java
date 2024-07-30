@@ -24,19 +24,14 @@ public class AddPerformRequest {
     @JsonProperty("view_type")
     @Enumerated(EnumType.STRING)
     private ViewType viewType;
-
     @JsonProperty("translate_type")
     @Enumerated(EnumType.STRING)
     private TranslateType translateType;
-
     @JsonProperty("cinema_room_id")
     private UUID cinemaRoomId;
-
     @JsonProperty("start_time")
     private Timestamp startTime;
-
     @JsonProperty("end_time")
     private Timestamp endTime;
-
     private Double price;
 }

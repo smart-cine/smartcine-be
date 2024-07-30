@@ -22,15 +22,12 @@ public class CursorBasedPageable {
     public boolean hasNextPageCursor() {
         return nextPageCursor != null && !nextPageCursor.isEmpty();
     }
-
     public boolean hasPrevPageCursor() {
         return prevPageCursor != null && !prevPageCursor.isEmpty();
     }
-
     public boolean hasCursors() {
         return hasPrevPageCursor() || hasNextPageCursor();
     }
-
     public  Object getDecodedCursor(String cursorValue) {
         if (cursorValue == null || cursorValue.isEmpty()) {
             throw new IllegalArgumentException("Cursor value is not valid!");
@@ -40,7 +37,6 @@ public class CursorBasedPageable {
 
         return substringBetween(decodedValue, "###");
     }
-
     public String getEncodedCursor(Object field, boolean hasPrevOrNextElements) {
         requireNonNull(field);
 
@@ -49,7 +45,6 @@ public class CursorBasedPageable {
         var structuredValue = "###" + field + "### - " + LocalDateTime.now();
         return Base64.getEncoder().encodeToString(structuredValue.getBytes());
     }
-
     public Object getSearchValue() {
         if (!hasCursors()) return null;
 

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 
 public class PageSpecificationTag<T> implements Specification<T> {
-
     private final transient String mainFieldName;
     private final transient Map<String, Object> paramsSearching;
     private final transient CursorBasedPageable cursorBasedPageable;

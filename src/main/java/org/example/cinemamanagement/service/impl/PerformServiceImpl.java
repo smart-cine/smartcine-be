@@ -52,7 +52,7 @@ public class PerformServiceImpl implements PerformService {
         pagingMap.put("previousPageCursor", null);
         pagingMap.put("nextPageCursor", null);
         pagingMap.put("size", cursorBasedPageable.getSize());
-        pagingMap.put("total", performSlide.getTotalElements());
+        pagingMap.put("total", 0);
         if (performSlide.isEmpty()) {
             return new PageResponse<>(false, List.of(), pagingMap);
         }
@@ -60,12 +60,11 @@ public class PerformServiceImpl implements PerformService {
         List<Perform> performs = performSlide.getContent();
         pagingMap.put("previousPageCursor", cursorBasedPageable.getEncodedCursor(performs.get(0).getStartTime(), performSlide.hasPrevious()));
         pagingMap.put("nextPageCursor", cursorBasedPageable.getEncodedCursor(performs.get(performs.size() - 1).getStartTime(), performSlide.hasNext()));
-
+        pagingMap.put("total", performSlide.getTotalElements());
 
         return new PageResponse<>(true, performs.stream()
                 .map(PerformMapper::toDTO)
                 .collect(Collectors.toList()), pagingMap);
-
 
     }
 
