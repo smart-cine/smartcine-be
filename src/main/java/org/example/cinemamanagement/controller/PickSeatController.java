@@ -7,6 +7,7 @@ import org.example.cinemamanagement.payload.response.PageResponse;
 import org.example.cinemamanagement.payload.response.PickSeatResponse;
 import org.example.cinemamanagement.payload.response.SocketResponse;
 import org.example.cinemamanagement.service.PickSeatService;
+import org.example.cinemamanagement.service.RedisService;
 import org.example.cinemamanagement.service.SocketIOService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class PickSeatController {
     }
 
     @GetMapping
-    public ResponseEntity<DataResponse<List<PickSeatResponse>>> getPickSeats(@RequestParam(name = "perform-id", required = true) UUID performID) {
+    public ResponseEntity<DataResponse<List<PickSeatResponse>>> getPickSeats(@RequestParam(name = "perform_id", required = true) UUID performID) {
         try {
             List<PickSeatResponse> pickSeatResponses = pickSeatService.getAllSeatsPickedOfPerform(performID);
             return ResponseEntity.ok(DataResponse.<List<PickSeatResponse>>builder()
@@ -42,22 +43,13 @@ public class PickSeatController {
         }
     }
 
-//    @GetMapping
-//    public ResponseEntity<?> getPickedSeatsByPerformID(@PathVariable UUID performID) {
-//
-//        DataResponse dataResponse = new DataResponse();
-//        dataResponse.setMessage("Get all picked seats successfully");
-//        dataResponse.setData(pickSeatService.getAllSeatsPickedOfPerform(performID));
-//        return ResponseEntity.ok(dataResponse);
-//    }
-
     @PostMapping
     public ResponseEntity<?> addPickSeats(@RequestBody PickSeatRequest pickSeatRequest) {
 
-        pickSeatService.addPickSeat(pickSeatRequest);
+//        System.out.println(RedisService.scan("0", "hi:*", 1000).getResult().;
 
         return ResponseEntity.ok(DataResponse.builder()
-                .data(null)
+                .data(pickSeatService.addPickSeat(pickSeatRequest))
                 .message("Add pick seat successfully")
                 .success(true)
                 .build());

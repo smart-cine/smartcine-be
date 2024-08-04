@@ -1,11 +1,13 @@
 package org.example.cinemamanagement.service.impl;
 
+import org.example.cinemamanagement.common.SeatStatus;
 import org.example.cinemamanagement.dto.PickSeatDTO;
 import org.example.cinemamanagement.mapper.PickSeatMapper;
 import org.example.cinemamanagement.model.Account;
 import org.example.cinemamanagement.model.CinemaLayoutSeat;
 import org.example.cinemamanagement.model.Perform;
 import org.example.cinemamanagement.model.PickSeat;
+import org.example.cinemamanagement.payload.request.AddOrDeletePickSeatRequest;
 import org.example.cinemamanagement.payload.request.DeletePickSeatRequest;
 import org.example.cinemamanagement.payload.request.PickSeatRequest;
 import org.example.cinemamanagement.payload.response.PickSeatResponse;
@@ -14,6 +16,7 @@ import org.example.cinemamanagement.repository.PerformRepository;
 import org.example.cinemamanagement.repository.PickSeatRepository;
 import org.example.cinemamanagement.repository.UserRepository;
 import org.example.cinemamanagement.service.PickSeatService;
+import org.example.cinemamanagement.service.RedisService;
 import org.example.cinemamanagement.service.SocketIOService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class PickSeatServiceImpl implements PickSeatService {
@@ -47,7 +49,7 @@ public class PickSeatServiceImpl implements PickSeatService {
 
     @Override
     @Transactional
-    public void addPickSeat(PickSeatRequest pickSeatRequest) {
+    public PickSeatRequest addPickSeat(PickSeatRequest pickSeatRequest) {
         Perform perform = performRepository.findById(pickSeatRequest.getPerformID()).orElseThrow(
                 () -> new RuntimeException("Perform not found")
         );
@@ -56,20 +58,20 @@ public class PickSeatServiceImpl implements PickSeatService {
                 .getAuthentication()
                 .getPrincipal();
 
+        Set<String> keys = RedisService.keys("pickseat:" + "*:" + account.getId());
 
-        if (pickSeatRepository.findByLayoutSeatIdAndPerformId(pickSeatRequest.getLayoutSeatID(), pickSeatRequest.getPerformID()).isPresent()) {
-            throw new RuntimeException("Seat already picked");
+        if (!keys.contains("pickseat:" + pickSeatRequest.getPerformID() + ":" + account.getId()) && keys.size() > 0) {
+            throw new RuntimeException("You can only pick 1 seats");
         }
 
-        PickSeat pickSeat = PickSeat.builder()
-                .perform(perform)
-                .account(userRepository.findById(account.getId()).get())
-                .layoutSeat(cinemaLayoutSeatRepository.findById(pickSeatRequest.getLayoutSeatID()).orElseThrow(
-                        () -> new RuntimeException("Seat not found")))
-                .build();
 
-        pickSeatRepository.save(pickSeat);
-        socketIOService.emit("post-pickseat", pickSeatRequest);
+        RedisService.sadd("pickseat:" + pickSeatRequest.getPerformID() + ":" + account.getId(), String.valueOf(pickSeatRequest.getLayoutSeatID()));
+
+        return PickSeatRequest.builder()
+                .layoutSeatID(pickSeatRequest.getLayoutSeatID())
+                .performID(pickSeatRequest.getPerformID())
+                .build();
+//        socketIOService.emit("post-pickseat", pickSeatRequest);
     }
 
 
@@ -79,9 +81,20 @@ public class PickSeatServiceImpl implements PickSeatService {
                 () -> new RuntimeException("Perform not found")
         );
 
-        return pickSeatRepository.findByPerformId(performID).stream()
-                .map(PickSeatMapper::toResponse)
-                .toList();
+        List<PickSeatResponse> pickSeatPickSeatResponses = new LinkedList<>();
+
+        RedisService.keys("pickseat:" + performID.toString() + ":*").forEach(value -> {
+            pickSeatPickSeatResponses.add(PickSeatResponse.builder()
+                    .seatID(UUID.fromString(value.split(":")[2]))
+                    .status(SeatStatus.PENDING)
+                    .build());
+        });
+
+        pickSeatRepository.findByPerformId(performID).forEach(pickSeat -> {
+            pickSeatPickSeatResponses.add(PickSeatMapper.toResponse(pickSeat));
+        });
+
+        return pickSeatPickSeatResponses;
     }
 
     @Override
@@ -102,22 +115,15 @@ public class PickSeatServiceImpl implements PickSeatService {
 
     @Override
     @Transactional
-    public void deletePickSeat(PickSeatRequest deletePickSeatRequest) {
+    public PickSeatRequest deletePickSeat(PickSeatRequest deletePickSeatRequest) {
 
         Account account = (Account) SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getPrincipal();
 
-        PickSeat pickSeat = pickSeatRepository.findByLayoutSeatIdAndPerformId(deletePickSeatRequest.getPerformID(), deletePickSeatRequest.getLayoutSeatID() ).orElseThrow(
-                () -> new RuntimeException("Seat not found"));
+        RedisService.srem("pickseat:" + deletePickSeatRequest.getPerformID() + ":" + account.getId(), String.valueOf(deletePickSeatRequest.getLayoutSeatID()));
 
-        if (!pickSeat.getAccount().getId().equals(account.getId())) {
-            throw new RuntimeException("You can only delete your own picked seat");
-        }
-
-        pickSeatRepository.deleteByPerformIdAndSeatId(deletePickSeatRequest.getPerformID(), deletePickSeatRequest.getLayoutSeatID());
-        socketIOService.emit("delete-pickseat", deletePickSeatRequest);
-        return;
+        return deletePickSeatRequest;
     }
 
 }

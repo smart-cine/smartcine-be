@@ -1,6 +1,7 @@
 package org.example.cinemamanagement.service;
 
 import org.example.cinemamanagement.dto.PickSeatDTO;
+import org.example.cinemamanagement.payload.request.AddOrDeletePickSeatRequest;
 import org.example.cinemamanagement.payload.request.DeletePickSeatRequest;
 import org.example.cinemamanagement.payload.request.PickSeatRequest;
 import org.example.cinemamanagement.payload.response.PickSeatResponse;
@@ -15,9 +16,9 @@ public interface PickSeatService {
 
     PickSeatDTO getPickSeatById();
 
-    public void addPickSeat(PickSeatRequest pickSeatRequests);
+    public PickSeatRequest addPickSeat(PickSeatRequest pickSeatRequests);
 
 
-    public void deletePickSeat(PickSeatRequest deletePickSeatRequest);
+    public PickSeatRequest deletePickSeat(PickSeatRequest deletePickSeatRequest);
 
 }

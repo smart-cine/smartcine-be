@@ -20,5 +20,4 @@ public class PickSeatRequest {
     @JsonProperty("layout_seat_id")
     private UUID layoutSeatID;
 
-
 }
