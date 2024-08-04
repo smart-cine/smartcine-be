@@ -1,4 +1,4 @@
-package org.example.cinemamanagement.configuration;
+package org.example.cinemamanagement.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

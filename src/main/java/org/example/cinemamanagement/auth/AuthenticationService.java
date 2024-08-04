@@ -2,7 +2,7 @@ package org.example.cinemamanagement.auth;
 
 import lombok.RequiredArgsConstructor;
 import org.example.cinemamanagement.common.Role;
-import org.example.cinemamanagement.configuration.JwtService;
+import org.example.cinemamanagement.service.JwtService;
 import org.example.cinemamanagement.mapper.AccountMapper;
 import org.example.cinemamanagement.model.Account;
 import org.example.cinemamanagement.repository.UserRepository;

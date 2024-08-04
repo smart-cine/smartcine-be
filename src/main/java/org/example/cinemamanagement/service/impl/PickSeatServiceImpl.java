@@ -23,6 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import redis.clients.jedis.params.ScanParams;
+import redis.clients.jedis.resps.ScanResult;
 
 import java.util.*;
 
@@ -58,12 +60,24 @@ public class PickSeatServiceImpl implements PickSeatService {
                 .getAuthentication()
                 .getPrincipal();
 
-        Set<String> keys = RedisService.keys("pickseat:" + "*:" + account.getId());
 
-        if (!keys.contains("pickseat:" + pickSeatRequest.getPerformID() + ":" + account.getId()) && keys.size() > 0) {
-            throw new RuntimeException("You can only pick 1 seats");
+        String cursor = "0";
+        do { // just for preventing use pick more than 1 perform
+            ScanParams scanParams = new ScanParams()
+                    .match("pickseat:*:" + account.getId())
+                    .count(100);
+
+            ScanResult<String> scanRes = RedisService.getJedisResource().scan("0", scanParams);
+            List<String> keys = scanRes.getResult();
+
+
+            if ( keys.size() > 0 && !keys.contains("pickseat:" + pickSeatRequest.getPerformID() + ":" + account.getId()) ) {
+                throw new RuntimeException("You can only pick 1 seats");
+            }
+
+            cursor = scanRes.getCursor();
         }
-
+        while (!cursor.equals("0"));
 
         RedisService.sadd("pickseat:" + pickSeatRequest.getPerformID() + ":" + account.getId(), String.valueOf(pickSeatRequest.getLayoutSeatID()));
 

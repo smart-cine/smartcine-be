@@ -46,8 +46,6 @@ public class PickSeatController {
     @PostMapping
     public ResponseEntity<?> addPickSeats(@RequestBody PickSeatRequest pickSeatRequest) {
 
-//        System.out.println(RedisService.scan("0", "hi:*", 1000).getResult().;
-
         return ResponseEntity.ok(DataResponse.builder()
                 .data(pickSeatService.addPickSeat(pickSeatRequest))
                 .message("Add pick seat successfully")

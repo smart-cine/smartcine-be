@@ -46,4 +46,8 @@ public class RedisService {
 
         return jedisResource.scan(cursor, scanParams);
     }
+
+    public static Jedis getJedisResource() {
+        return jedisResource;
+    }
 }
