@@ -24,7 +24,7 @@ public class VnPayHelper {
             return formatter.format(cld.getTime());
         }
 
-        cld.add(Calendar.MINUTE, 15);
+        cld.add(Calendar.MINUTE, 10);
         return formatter.format(cld.getTime());
     }
 
@@ -80,39 +80,31 @@ public class VnPayHelper {
 
     //Util for VNPAY
     public static String hashAllFields(Map fields) {
-
         List fieldNames = new ArrayList(fields.keySet());
         Collections.sort(fieldNames);
         StringBuilder sb = new StringBuilder();
         Iterator itr = fieldNames.iterator();
         while (itr.hasNext()) {
-
             String fieldName = (String) itr.next();
             String fieldValue = (String) fields.get(fieldName);
             if ((fieldValue != null) && (fieldValue.length() > 0)) {
-
                 sb.append(fieldName);
                 sb.append("=");
                 sb.append(fieldValue);
             }
             if (itr.hasNext()) {
-
                 sb.append("&");
             }
         }
-
         return hmacSHA512(VnPayConstant.SECRET_KEY, sb.toString());
-
     }
 
     public static String hmacSHA512(final String key, final String data) {
-
         try {
 
             if (key == null || data == null) {
                 throw new NullPointerException();
             }
-
             final Mac hmac512 = Mac.getInstance("HmacSHA512");
             byte[] hmacKeyBytes = key.getBytes();
             final SecretKeySpec secretKey = new SecretKeySpec(hmacKeyBytes, "HmacSHA512");
@@ -126,10 +118,8 @@ public class VnPayHelper {
             return sb.toString();
 
         } catch (Exception ex) {
-
             return "";
         }
-
     }
 
     public static String getIpAddress(HttpServletRequest request) {

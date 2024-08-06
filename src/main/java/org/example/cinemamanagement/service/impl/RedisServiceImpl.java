@@ -1,5 +1,7 @@
-package org.example.cinemamanagement.service;
+package org.example.cinemamanagement.service.impl;
 
+import org.example.cinemamanagement.service.CachingService;
+import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -9,8 +11,16 @@ import redis.clients.jedis.resps.ScanResult;
 import java.time.Duration;
 import java.util.Set;
 
-public class RedisService {
+@Service
+public class RedisServiceImpl {
     private static Jedis jedisResource = new JedisPool(new JedisPoolConfig(), "localhost", 6379).getResource();
+
+    public RedisServiceImpl() {
+        if (jedisResource == null) {
+            jedisResource = new JedisPool(new JedisPoolConfig(), "localhost", 6379).getResource();
+        }
+    }
+
     public static void sadd(String key, String value) {
         Set<String> res = jedisResource.smembers(key);
         if (res.isEmpty()) {
@@ -23,15 +33,23 @@ public class RedisService {
 
     }
 
+    public static boolean sismember(String key, String value) {
+        return jedisResource.sismember(key, value);
+    }
+
+    public static boolean exists(String key) {
+        return jedisResource.exists(key);
+    }
+
     public static void srem(String key, String value) {
         jedisResource.srem(key, value);
     }
 
-    public static void smembers(String key) {
-        jedisResource.smembers(key);
+    public static Set<String> smembers(String key) {
+        return jedisResource.smembers(key);
     }
 
-    public static void expire(String key, int seconds) {
+    public static void expire(String key, long seconds) {
         jedisResource.expire(key, seconds);
     }
 
@@ -45,6 +63,11 @@ public class RedisService {
         ScanParams scanParams = new ScanParams().match(pattern).count(count);
 
         return jedisResource.scan(cursor, scanParams);
+    }
+
+    // delete
+    public static void del(String key) {
+        jedisResource.del(key);
     }
 
     public static Jedis getJedisResource() {

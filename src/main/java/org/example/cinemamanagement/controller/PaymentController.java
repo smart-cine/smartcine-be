@@ -1,12 +1,15 @@
 package org.example.cinemamanagement.controller;
 
-import org.example.cinemamanagement.payload.request.AddPaymentRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.example.cinemamanagement.payload.request.OrderRequestDTO;
 import org.example.cinemamanagement.payload.response.DataResponse;
 import org.example.cinemamanagement.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -18,19 +21,33 @@ public class PaymentController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getPayment(@PathVariable UUID id) {
-
-        DataResponse dataResponse = new DataResponse();
-        dataResponse.setMessage("Get payment successfully");
-        dataResponse.setData(paymentService.getPayment(id));
+        DataResponse dataResponse = DataResponse.builder()
+                .message("Get payment successfully")
+                .data(paymentService.getPayment(id))
+                .success(true)
+                .build();
 
         return ResponseEntity.ok(dataResponse);
     }
 
     @PostMapping
-    public ResponseEntity<?> addPayment(@RequestBody AddPaymentRequest req) {
-        paymentService.addPayment(req);
-        DataResponse dataResponse = new DataResponse();
-        dataResponse.setMessage("Add payment successfully");
+    public ResponseEntity<?> createPayment(
+            HttpServletRequest request,
+            @RequestBody OrderRequestDTO req) throws Exception {
+        DataResponse dataResponse = DataResponse.builder()
+                .message("Add payment successfully")
+                .success(true)
+                .data(paymentService.createOrder(request, req))
+                .build();
         return ResponseEntity.ok(dataResponse);
+    }
+
+    @GetMapping("/ipn")
+    public ResponseEntity<?> handlePayment(@RequestParam Map<String, String> params) {
+        paymentService.handlePayment(params);
+        return ResponseEntity.ok(DataResponse.builder()
+                .message("Payment handled successfully")
+                .success(true)
+                .build());
     }
 }

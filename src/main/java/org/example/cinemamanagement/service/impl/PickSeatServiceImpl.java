@@ -4,11 +4,7 @@ import org.example.cinemamanagement.common.SeatStatus;
 import org.example.cinemamanagement.dto.PickSeatDTO;
 import org.example.cinemamanagement.mapper.PickSeatMapper;
 import org.example.cinemamanagement.model.Account;
-import org.example.cinemamanagement.model.CinemaLayoutSeat;
 import org.example.cinemamanagement.model.Perform;
-import org.example.cinemamanagement.model.PickSeat;
-import org.example.cinemamanagement.payload.request.AddOrDeletePickSeatRequest;
-import org.example.cinemamanagement.payload.request.DeletePickSeatRequest;
 import org.example.cinemamanagement.payload.request.PickSeatRequest;
 import org.example.cinemamanagement.payload.response.PickSeatResponse;
 import org.example.cinemamanagement.repository.CinemaLayoutSeatRepository;
@@ -16,10 +12,8 @@ import org.example.cinemamanagement.repository.PerformRepository;
 import org.example.cinemamanagement.repository.PickSeatRepository;
 import org.example.cinemamanagement.repository.UserRepository;
 import org.example.cinemamanagement.service.PickSeatService;
-import org.example.cinemamanagement.service.RedisService;
 import org.example.cinemamanagement.service.SocketIOService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,7 +61,7 @@ public class PickSeatServiceImpl implements PickSeatService {
                     .match("pickseat:*:" + account.getId())
                     .count(100);
 
-            ScanResult<String> scanRes = RedisService.getJedisResource().scan("0", scanParams);
+            ScanResult<String> scanRes = RedisServiceImpl.getJedisResource().scan("0", scanParams);
             List<String> keys = scanRes.getResult();
 
 
@@ -79,7 +73,7 @@ public class PickSeatServiceImpl implements PickSeatService {
         }
         while (!cursor.equals("0"));
 
-        RedisService.sadd("pickseat:" + pickSeatRequest.getPerformID() + ":" + account.getId(), String.valueOf(pickSeatRequest.getLayoutSeatID()));
+        RedisServiceImpl.sadd("pickseat:" + pickSeatRequest.getPerformID() + ":" + account.getId(), String.valueOf(pickSeatRequest.getLayoutSeatID()));
 
         return PickSeatRequest.builder()
                 .layoutSeatID(pickSeatRequest.getLayoutSeatID())
@@ -97,7 +91,7 @@ public class PickSeatServiceImpl implements PickSeatService {
 
         List<PickSeatResponse> pickSeatPickSeatResponses = new LinkedList<>();
 
-        RedisService.keys("pickseat:" + performID.toString() + ":*").forEach(value -> {
+        RedisServiceImpl.keys("pickseat:" + performID.toString() + ":*").forEach(value -> {
             pickSeatPickSeatResponses.add(PickSeatResponse.builder()
                     .seatID(UUID.fromString(value.split(":")[2]))
                     .status(SeatStatus.PENDING)
@@ -135,7 +129,7 @@ public class PickSeatServiceImpl implements PickSeatService {
                 .getAuthentication()
                 .getPrincipal();
 
-        RedisService.srem("pickseat:" + deletePickSeatRequest.getPerformID() + ":" + account.getId(), String.valueOf(deletePickSeatRequest.getLayoutSeatID()));
+        RedisServiceImpl.srem("pickseat:" + deletePickSeatRequest.getPerformID() + ":" + account.getId(), String.valueOf(deletePickSeatRequest.getLayoutSeatID()));
 
         return deletePickSeatRequest;
     }

@@ -39,6 +39,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(req -> req
                         .requestMatchers("/api/v1/user/**").permitAll()
                         .requestMatchers("/test/**").permitAll()
+                        .requestMatchers("/api/v1/payment/ipn").permitAll()
                         .requestMatchers("/api/v1/managers/**").hasAuthority(Role.MANAGER.name())
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

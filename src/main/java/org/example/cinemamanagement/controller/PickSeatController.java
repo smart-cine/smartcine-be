@@ -1,20 +1,14 @@
 package org.example.cinemamanagement.controller;
 
-import org.example.cinemamanagement.payload.request.DeletePickSeatRequest;
 import org.example.cinemamanagement.payload.request.PickSeatRequest;
 import org.example.cinemamanagement.payload.response.DataResponse;
-import org.example.cinemamanagement.payload.response.PageResponse;
 import org.example.cinemamanagement.payload.response.PickSeatResponse;
-import org.example.cinemamanagement.payload.response.SocketResponse;
 import org.example.cinemamanagement.service.PickSeatService;
-import org.example.cinemamanagement.service.RedisService;
-import org.example.cinemamanagement.service.SocketIOService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController

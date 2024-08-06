@@ -46,6 +46,9 @@ public class Payment {
     @Column(name = "date_expired")
     private Timestamp dateExpire;
 
+    @Column(name = "vnp_txn_ref")
+    private String vnpTxnRef;
+
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH,
             CascadeType.MERGE,
             CascadeType.PERSIST,

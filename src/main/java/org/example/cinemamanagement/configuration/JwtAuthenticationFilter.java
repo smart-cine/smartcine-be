@@ -36,6 +36,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String userEmail;
 
         // return 404 status when direct to strange endpoint
+        if(request.getRequestURI().equals("/api/v1/payment/ipn") && request.getMethod().equals("GET"))
+        {
+            // permit all
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (((authorizationHeader == null) || !authorizationHeader.startsWith("Bearer ")) &&
                 (!request.getRequestURI().contains("/api/v1/user"))) {
