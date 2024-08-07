@@ -61,7 +61,6 @@ public class RedisServiceImpl {
             String cursor, String pattern, int count
     ) {
         ScanParams scanParams = new ScanParams().match(pattern).count(count);
-
         return jedisResource.scan(cursor, scanParams);
     }
 

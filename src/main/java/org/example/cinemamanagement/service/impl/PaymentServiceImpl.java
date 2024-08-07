@@ -206,10 +206,6 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Transactional
     public void handlePayment(Map<String, String> params) {
-        for (Map.Entry<String, String> entry : params.entrySet()) {
-            System.out.println(entry.getKey() + " = " + entry.getValue());
-        }
-
         try {
             String vnpResponseCode = params.get("vnp_ResponseCode");
             String vnpTxnRef = params.get("vnp_TxnRef");
@@ -225,12 +221,6 @@ public class PaymentServiceImpl implements PaymentService {
                             Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                                     .format(new SimpleDateFormat("yyyyMMddHHmmss").parse(vnpPayDate)))
                     );
-
-            System.out.println(
-                    Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                            .format(new SimpleDateFormat("yyyyMMddHHmmss").parse(vnpPayDate)))
-            );
-
 
             switch (vnpResponseCode) {
                 case "00":

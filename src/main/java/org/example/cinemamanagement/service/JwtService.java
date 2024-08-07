@@ -5,14 +5,18 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.example.cinemamanagement.model.Account;
+import org.example.cinemamanagement.service.impl.RedisServiceImpl;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.Duration;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
@@ -31,6 +35,13 @@ public class JwtService {
                 .getBody();
     }
 
+    //getAuthorities
+    public List<String> getAuthorities(String token) {
+//        return List.of(new SimpleGrantedAuthority(role.name()));
+        Claims claims = extractAllClaims(token);
+        return claims.get("authorities", List.class);
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> function) {
         Claims claims = extractAllClaims(token);
         return function.apply(claims);
@@ -40,25 +51,40 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
+    public String extractId(String token) {
+        return extractClaim(token, Claims::getId);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails) {
+
+        return generateToken(
+                Map.of("authorities", userDetails
+                        .getAuthorities()
+                        .stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.toList())
+                )
+                , (Account) userDetails);
+    }
+
+    public String generateToken(Map<String, Object> extraClaims, Account userDetails) {
+        RedisServiceImpl.getJedisResource().set(userDetails.getEmail(), userDetails.getId().toString());
+        RedisServiceImpl.expire(userDetails.getEmail(), Duration.ofDays(2).getSeconds());
+
         return Jwts
                 .builder()
                 .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
+                .setId(String.valueOf(userDetails.getId()))
+                .setSubject(userDetails.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                // i want to add 1 month
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 60))
+                .setExpiration(new Date(System.currentTimeMillis() + Duration.ofDays(30).toMillis()))
                 .signWith(getSigninKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
+    public boolean isTokenValid(String token, String userNameGetedFromDb) {
         final String userName = extractUserName(token);
-        return userName.equals(userDetails.getUsername()) && !isTokenExpired(token);
+        return userName.equals(userNameGetedFromDb) && !isTokenExpired(token);
     }
 
     public boolean isTokenExpired(String token) {

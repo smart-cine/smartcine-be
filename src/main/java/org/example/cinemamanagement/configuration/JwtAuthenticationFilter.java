@@ -6,8 +6,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.example.cinemamanagement.common.Role;
+import org.example.cinemamanagement.model.Account;
 import org.example.cinemamanagement.payload.response.DataResponse;
 import org.example.cinemamanagement.service.JwtService;
+import org.example.cinemamanagement.service.impl.UserService;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +21,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -25,6 +29,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final HandlerExceptionResolver handlerExceptionResolver;
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final UserService userService;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -36,8 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String userEmail;
 
         // return 404 status when direct to strange endpoint
-        if(request.getRequestURI().equals("/api/v1/payment/ipn") && request.getMethod().equals("GET"))
-        {
+        if (request.getRequestURI().equals("/api/v1/payment/ipn") && request.getMethod().equals("GET")) {
             // permit all
             filterChain.doFilter(request, response);
             return;
@@ -50,8 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write("{\"message\": \"JWT Token is missing\"}");
             return;
-        }
-        else if(request.getRequestURI().contains("/api/v1/user") && request.getMethod().equals("POST")) {
+        } else if (request.getRequestURI().contains("/api/v1/user") && request.getMethod().equals("POST")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -59,11 +62,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             jwt = authorizationHeader.substring(7);
             userEmail = jwtService.extractUserName(jwt);
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-                System.out.println(jwt);
-                if (jwtService.isTokenValid(jwt, userDetails)) {
+
+                String tempName = userService.checkExistingOfUserInDB(userEmail);
+                UserDetails userDetail = Account.builder()
+                        .id(UUID.fromString(jwtService.extractId(jwt)))
+                        .email(tempName)
+                        .name(tempName)
+                        .role(Role.valueOf(jwtService.getAuthorities(jwt).get(0)))
+                        .build();
+
+
+                if (jwtService.isTokenValid(jwt, userDetail.getUsername())) {
+
                     UsernamePasswordAuthenticationToken authenticationToken = new
-                            UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                            UsernamePasswordAuthenticationToken(userDetail, null, userDetail.getAuthorities());
 
                     SecurityContextHolder
                             .getContext()
@@ -71,9 +83,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
             filterChain.doFilter(request, response);
-        }
-
-        catch ( Exception e) {
+        } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");

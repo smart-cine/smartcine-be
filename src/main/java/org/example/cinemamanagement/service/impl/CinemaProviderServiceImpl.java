@@ -26,6 +26,7 @@ public class CinemaProviderServiceImpl implements CinemaProviderService {
 
     @Override
     public List<CinemaProviderDTO> getAllCinemaProviders() {
+
         return cinemaProviderRepository.findAll().stream()
                 .map(CinemaProviderMapper::toDTO)
                 .collect(Collectors.toList());

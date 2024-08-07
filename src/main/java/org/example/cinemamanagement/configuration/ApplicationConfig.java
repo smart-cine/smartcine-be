@@ -2,6 +2,7 @@ package org.example.cinemamanagement.configuration;
 
 import lombok.RequiredArgsConstructor;
 import org.example.cinemamanagement.repository.UserRepository;
+import org.example.cinemamanagement.service.impl.RedisServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

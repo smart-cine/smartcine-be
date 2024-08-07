@@ -28,6 +28,7 @@ public class CinemaProviderController {
                 .success(true)
                 .message("Success")
                 .build());
+
     }
 
     @GetMapping("/{id}")
