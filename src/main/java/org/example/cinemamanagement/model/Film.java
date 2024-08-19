@@ -77,13 +77,4 @@ public class Film {
     })
     private CinemaProvider cinemaProvider;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {
-            CascadeType.DETACH,
-            CascadeType.MERGE,
-            CascadeType.PERSIST,
-            CascadeType.REFRESH
-    })
-    @JoinColumn(name = "manager_id")
-    private ManagerAccount managerAccount;
-
 }

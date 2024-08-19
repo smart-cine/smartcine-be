@@ -36,25 +36,6 @@ public class Account implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-//    @JsonIgnore
-//    @ManyToMany(fetch = FetchType.LAZY, cascade = {
-//            CascadeType.DETACH,
-//            CascadeType.MERGE,
-//            CascadeType.PERSIST,
-//            CascadeType.REFRESH
-//    })
-//    @JoinTable(name = "cinema_manager",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "cinema_id"))
-//    private List<Cinema> cinemas;
-//    @JsonIgnore
-//    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = {
-//            CascadeType.DETACH,
-//            CascadeType.MERGE,
-//            CascadeType.PERSIST,
-//            CascadeType.REFRESH
-//    })
-//    private List<Cinema> cinemas;
 
     @JsonIgnore
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

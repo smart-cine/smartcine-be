@@ -1,9 +1,6 @@
 package org.example.cinemamanagement.mapper;
 
-import org.example.cinemamanagement.dto.CinemaDTO;
-import org.example.cinemamanagement.dto.FilmDTO;
-import org.example.cinemamanagement.dto.TagDTO;
-import org.example.cinemamanagement.model.Cinema;
+import org.example.cinemamanagement.dto.film.FilmDTO;
 import org.example.cinemamanagement.model.Film;
 import org.example.cinemamanagement.model.Tag;
 import org.modelmapper.ModelMapper;
@@ -17,7 +14,6 @@ public class FilmMapper {
         FilmDTO filmDTO = typeMap.map(film);
 
         filmDTO.setCinemaProviderId(film.getCinemaProvider().getId());
-        filmDTO.setManagerId(film.getManagerAccount().getId());
 
         filmDTO.setTags(film.getTags().stream().map(Tag::getName)
                 .collect(Collectors.toList()));

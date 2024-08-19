@@ -1,6 +1,6 @@
 package org.example.cinemamanagement.service;
 
-import org.example.cinemamanagement.dto.CinemaProviderDTO;
+import org.example.cinemamanagement.dto.cinema.CinemaProviderDTO;
 
 import java.util.List;
 import java.util.UUID;

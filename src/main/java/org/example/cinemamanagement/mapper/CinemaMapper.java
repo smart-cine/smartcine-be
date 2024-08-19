@@ -1,6 +1,6 @@
 package org.example.cinemamanagement.mapper;
 
-import org.example.cinemamanagement.dto.CinemaDTO;
+import org.example.cinemamanagement.dto.cinema.CinemaDTO;
 import org.example.cinemamanagement.model.Cinema;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;

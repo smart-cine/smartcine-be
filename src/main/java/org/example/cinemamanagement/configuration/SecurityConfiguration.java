@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.cinemamanagement.common.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -31,6 +32,7 @@ public class SecurityConfiguration {
         return corsConfiguration;
     }
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -40,7 +42,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/v1/user/**").permitAll()
                         .requestMatchers("/test/**").permitAll()
                         .requestMatchers("/api/v1/payment/ipn").permitAll()
-                        .requestMatchers("/api/v1/managers/**").hasAuthority(Role.MANAGER.name())
+                        .requestMatchers("/api/v1/managers/**").hasAuthority(Role.BUSINESS.name())
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)

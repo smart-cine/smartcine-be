@@ -1,4 +1,4 @@
-package org.example.cinemamanagement.dto;
+package org.example.cinemamanagement.dto.cinema;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,6 @@ public class CinemaRoomDTO {
     @JsonProperty("cinema_layout_id")
     private UUID cinemaLayoutId;
     private String name;
-    private RoomType type;
 }
 
 

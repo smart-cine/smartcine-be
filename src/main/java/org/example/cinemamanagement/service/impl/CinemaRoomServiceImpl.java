@@ -1,6 +1,10 @@
 package org.example.cinemamanagement.service.impl;
 
-import org.example.cinemamanagement.dto.CinemaRoomDTO;
+import org.example.cinemamanagement.dto.cinema.CinemaRoomDTO;
+import org.example.cinemamanagement.dto.cinema.item.CinemaLayoutDTOItem;
+import org.example.cinemamanagement.dto.cinema.item.CinemaLayoutGroupDTOItem;
+import org.example.cinemamanagement.dto.cinema.item.CinemaLayoutSeatDTOItem;
+import org.example.cinemamanagement.dto.cinema.item.CinemaRoomDTOItem;
 import org.example.cinemamanagement.mapper.CinemaRoomMapper;
 import org.example.cinemamanagement.model.Cinema;
 import org.example.cinemamanagement.model.CinemaLayout;
@@ -42,7 +46,7 @@ public class CinemaRoomServiceImpl implements CinemaRoomService {
 
     @Override
     public PageResponse<List<CinemaRoomDTO>> getAllCinemaRooms(CursorBasedPageable cursorBasedPageable, PageSpecification<CinemaRoom> specification) {
-        var cinemaRoomSlide  = cinemaRoomRepository.findAll(specification,
+        var cinemaRoomSlide = cinemaRoomRepository.findAll(specification,
                 Pageable.ofSize(cursorBasedPageable.getSize()));
 
         Map<String, Object> pagingMap = new HashMap<>();
@@ -52,8 +56,7 @@ public class CinemaRoomServiceImpl implements CinemaRoomService {
         pagingMap.put("size", cursorBasedPageable.getSize());
         pagingMap.put("total", cinemaRoomSlide.getTotalElements());
 
-        if (!cinemaRoomSlide.hasContent())
-        {
+        if (!cinemaRoomSlide.hasContent()) {
             return new PageResponse<>(false, List.of(), pagingMap);
         }
 
@@ -68,10 +71,37 @@ public class CinemaRoomServiceImpl implements CinemaRoomService {
 
 
     @Override
-    public CinemaRoomDTO getCinemaRoomById(UUID id) {
+    public CinemaRoomDTOItem getCinemaRoomById(UUID id) {
         CinemaRoom cinemaRoom = cinemaRoomRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CinemaRoom not found"));
-        return CinemaRoomMapper.toDTO(cinemaRoom);
+
+        Map<String, Object> layoutResponse = new HashMap<>();
+
+        return CinemaRoomDTOItem.builder()
+                .id(cinemaRoom.getId())
+                .cinemaId(cinemaRoom.getCinema().getId())
+                .name(cinemaRoom.getName())
+                .layout(CinemaLayoutDTOItem.builder()
+                        .id(cinemaRoom.getCinemaLayout().getId())
+                        .rows(cinemaRoom.getCinemaLayout().getRows())
+                        .columns(cinemaRoom.getCinemaLayout().getColumns())
+                        .groups(cinemaRoom.getCinemaLayout().getCinemaLayoutGroups().stream().map(group -> CinemaLayoutGroupDTOItem.builder()
+                                .id(group.getId())
+                                .name(group.getName())
+                                .color(group.getColor())
+                                .build()).collect(Collectors.toList())
+                        )
+                        .seats(
+                                cinemaRoom.getCinemaLayout().getCinemaLayoutSeats().stream().map(seat -> CinemaLayoutSeatDTOItem.builder()
+                                        .id(seat.getId())
+                                        .groupId(seat.getCinemaLayoutGroup().getId())
+                                        .code(seat.getCode())
+                                        .x(seat.getX())
+                                        .y(seat.getY())
+                                        .build()).collect(Collectors.toList()
+                                ))
+                        .build())
+                .build();
     }
 
     @Override
@@ -88,7 +118,6 @@ public class CinemaRoomServiceImpl implements CinemaRoomService {
                 .name(addOrUpdateCinemaRoom.getName())
                 .cinema(cinema)
                 .cinemaLayout(layout)
-                .roomType(addOrUpdateCinemaRoom.getType())
                 .build();
 
         cinemaRoomRepository.save(cinemaRoom);
@@ -96,7 +125,7 @@ public class CinemaRoomServiceImpl implements CinemaRoomService {
     }
 
     @Override
-    public void updateCinemaRoom(UUID id, AddOrUpdateCinemaRoom addOrUpdateCinemaRoom) {
+    public CinemaRoomDTO updateCinemaRoom(UUID id, AddOrUpdateCinemaRoom addOrUpdateCinemaRoom) {
         CinemaRoom cinemaRoom = cinemaRoomRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CinemaRoom not found"));
 
@@ -117,6 +146,8 @@ public class CinemaRoomServiceImpl implements CinemaRoomService {
         }
 
         cinemaRoomRepository.save(cinemaRoom);
+
+        return CinemaRoomMapper.toDTO(cinemaRoom);
     }
 
     @Override

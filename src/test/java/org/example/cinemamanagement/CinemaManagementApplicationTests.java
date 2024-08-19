@@ -1,6 +1,6 @@
 package org.example.cinemamanagement;
 
-import org.example.cinemamanagement.dto.PerformDTO;
+import org.example.cinemamanagement.dto.perform.PerformDTO;
 import org.example.cinemamanagement.mapper.PerformMapper;
 import org.example.cinemamanagement.model.*;
 import org.junit.jupiter.api.Test;

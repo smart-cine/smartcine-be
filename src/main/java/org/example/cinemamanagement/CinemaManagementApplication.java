@@ -1,6 +1,5 @@
 package org.example.cinemamanagement;
 
-import org.example.cinemamanagement.configuration.KeyExpiredListener;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;

@@ -1,7 +1,6 @@
 package org.example.cinemamanagement.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.example.cinemamanagement.payload.request.OrderRequestDTO;
 import org.example.cinemamanagement.payload.response.DataResponse;
 import org.example.cinemamanagement.service.PaymentService;
@@ -35,8 +34,7 @@ public class PaymentController {
             HttpServletRequest request,
             @RequestBody OrderRequestDTO req) throws Exception {
         DataResponse dataResponse = DataResponse.builder()
-                .message("Add payment successfully")
-                .success(true)
+                .message("Add payment successfully").success(true)
                 .data(paymentService.createOrder(request, req))
                 .build();
         return ResponseEntity.ok(dataResponse);

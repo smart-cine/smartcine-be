@@ -1,11 +1,16 @@
 package org.example.cinemamanagement.service.impl;
 
-import org.example.cinemamanagement.dto.PerformDTO;
+import jakarta.persistence.EnumType;
+import org.example.cinemamanagement.dto.cinema.CinemaRoomDTO;
+import org.example.cinemamanagement.dto.film.FilmDTO;
+import org.example.cinemamanagement.dto.perform.PerformDTO;
+import org.example.cinemamanagement.dto.perform.PerformDTOItem;
 import org.example.cinemamanagement.mapper.PerformMapper;
 import org.example.cinemamanagement.model.*;
 import org.example.cinemamanagement.pagination.PageSpecificationPerform;
 import org.example.cinemamanagement.payload.request.AddPerformRequest;
 import org.example.cinemamanagement.repository.*;
+import org.example.cinemamanagement.repository.BusinessAccountRepository;
 import org.example.cinemamanagement.service.PerformService;
 import org.example.cinemamanagement.utils.ConvertJsonNameToTypeName;
 import org.example.cinemamanagement.pagination.CursorBasedPageable;
@@ -27,13 +32,13 @@ public class PerformServiceImpl implements PerformService {
     PerformRepository performRepository;
     CinemaRoomRepository cinemaRoomRepository;
     FilmRepository filmRepository;
-    ManagerAccountRepository managerAccountRepository;
+    BusinessAccountRepository managerAccountRepository;
 
     @Autowired
     public PerformServiceImpl(PerformRepository performRepository,
                               CinemaRoomRepository cinemaRoomRepository,
                               FilmRepository filmRepository,
-                              ManagerAccountRepository managerAccountRepository
+                              BusinessAccountRepository managerAccountRepository
     ) {
         this.performRepository = performRepository;
         this.cinemaRoomRepository = cinemaRoomRepository;
@@ -42,7 +47,7 @@ public class PerformServiceImpl implements PerformService {
     }
 
     @Override
-    public PageResponse<List<PerformDTO>> getAllPerforms(
+    public PageResponse<List<UUID>> getAllPerforms(
             PageSpecificationPerform<Perform> pageSpecification,
             CursorBasedPageable cursorBasedPageable) {
 
@@ -63,18 +68,52 @@ public class PerformServiceImpl implements PerformService {
         pagingMap.put("nextPageCursor", cursorBasedPageable.getEncodedCursor(performs.get(performs.size() - 1).getStartTime(), performSlide.hasNext()));
         pagingMap.put("total", performSlide.getTotalElements());
 
+//        return new PageResponse<>(true, performs.stream()
+//                .map(PerformMapper::toDTO)
+//                .collect(Collectors.toList()), pagingMap);
         return new PageResponse<>(true, performs.stream()
-                .map(PerformMapper::toDTO)
+                .map(Perform::getId)
                 .collect(Collectors.toList()), pagingMap);
-
     }
 
     @Override
-    public PerformDTO getPerformById(UUID id) {
-
+    public PerformDTOItem getPerformById(UUID id) {
         Perform perform = performRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Perform not found with id: " + id));
-        return PerformMapper.toDTO(perform);
+
+        return PerformDTOItem
+                .builder()
+                .filmDTO(FilmDTO.builder()
+                        .id(perform.getFilm().getId())
+                        .title(perform.getFilm().getTitle())
+                        .duration(perform.getFilm().getDuration())
+                        .description(perform.getFilm().getDescription())
+                        .country(perform.getFilm().getCountry())
+                        .director(perform.getFilm().getDirector())
+                        .language(perform.getFilm().getLanguage())
+                        .tags(perform.getFilm().getTags().stream()
+                                .map(Tag::getName)
+                                .collect(Collectors.toList()))
+                        .description(perform.getFilm().getDescription())
+                        .country(perform.getFilm().getCountry())
+                        .director(perform.getFilm().getDirector())
+                        .restrictAge(perform.getFilm().getRestrictAge())
+                        .releaseDate(perform.getFilm().getReleaseDate())
+                        .pictureUrl(perform.getFilm().getPictureUrl())
+                        .trailerUrl(perform.getFilm().getTrailerUrl())
+                        .build())
+                .translateType(perform.getTranslateType())
+                .viewType(perform.getViewType())
+                .startTime(perform.getStartTime())
+                .endTime(perform.getEndTime())
+                .price(perform.getPrice())
+                .id(perform.getId())
+                .cinemaRoomDTO(CinemaRoomDTO.builder()
+                        .id(perform.getCinemaRoom().getId())
+                        .name(perform.getCinemaRoom().getName())
+                        .cinemaId(perform.getCinemaRoom().getCinema().getId())
+                        .build())
+                .build();
     }
 
     @Override
@@ -86,14 +125,9 @@ public class PerformServiceImpl implements PerformService {
         Film film = filmRepository.findById(addPerformRequest.getFilmId())
                 .orElseThrow(() -> new RuntimeException("Film not found"));
 
-        ManagerAccount managerAccount = managerAccountRepository.findById(addPerformRequest.getManagerId())
-                .orElseThrow(() -> new RuntimeException("Manager not found"));
-
-
         Perform perform = performRepository.save(
                 Perform.builder()
                         .film(film)
-                        .managerAccount(managerAccount)
                         .cinemaRoom(cinemaRoom)
                         .viewType(addPerformRequest.getViewType())
                         .translateType(addPerformRequest.getTranslateType())
@@ -116,14 +150,26 @@ public class PerformServiceImpl implements PerformService {
             Object value = dataSet.getValue();
 
             try {
-                Field field = Cinema.class.getDeclaredField(
-                        ConvertJsonNameToTypeName.convert(key)
-                );
 
-                field.setAccessible(true);
-                field.set(perform, value);
-            } catch (NoSuchFieldException | IllegalAccessException e) {
-                throw new RuntimeException("Error updating field " + key);
+                key = ConvertJsonNameToTypeName.convert(key);
+
+                if (key.equals("viewType") || key.equals("translateType")) {
+//                    key = key.substring(0, 1).toUpperCase() + key.substring(1);
+
+                    Field field = Perform.class.getDeclaredField("viewType");
+                    System.out.println();
+
+//                    Field field = Perform.class.getField(key);
+//                    field.setAccessible(true);
+//                    field.set(perform, EnumType.valueOf((String) value));
+                } else {
+//                    Field field = Perform.class.getDeclaredField(key);
+//                    field.setAccessible(true);
+//                    field.set(perform, value);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+//                throw new RuntimeException("Error updating field " + key);
             }
         }
 

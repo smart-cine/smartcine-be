@@ -20,9 +20,6 @@ import java.util.UUID;
 @Table(name = "cinemalayout")
 public class CinemaLayout {
 
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "cinemaLayout")
-    private List<CinemaRoom> cinemaRooms;
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -34,18 +31,32 @@ public class CinemaLayout {
 
     private Integer columns;
 
-    @ManyToOne( fetch = FetchType.LAZY, cascade = {
+//    @ManyToOne( fetch = FetchType.LAZY, cascade = {
+//            CascadeType.DETACH,
+//            CascadeType.MERGE,
+//            CascadeType.PERSIST,
+//            CascadeType.REFRESH
+//    })
+//    @JoinColumn(name = "manager_id")
+//    private BusinessAccount businessAccount;
+
+    @ManyToOne(cascade = {
             CascadeType.DETACH,
             CascadeType.MERGE,
             CascadeType.PERSIST,
             CascadeType.REFRESH
     })
-    @JoinColumn(name = "manager_id")
-    private ManagerAccount managerAccount;
+    @JoinColumn(name = "cinema_provider_id")
+    private CinemaProvider cinemaProvider;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "cinemaLayout", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CinemaLayoutGroup> cinemaLayoutGroups;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "cinemaLayout", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CinemaLayoutSeat> cinemaLayoutSeats;
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "cinemaLayout")
+    private List<CinemaRoom> cinemaRooms;
 }

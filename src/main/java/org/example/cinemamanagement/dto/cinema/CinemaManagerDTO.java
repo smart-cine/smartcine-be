@@ -1,4 +1,4 @@
-package org.example.cinemamanagement.dto;
+package org.example.cinemamanagement.dto.cinema;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

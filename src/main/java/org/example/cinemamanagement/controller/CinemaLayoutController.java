@@ -1,7 +1,6 @@
 package org.example.cinemamanagement.controller;
 
-import org.example.cinemamanagement.dto.CinemaLayoutDTO;
-import org.example.cinemamanagement.model.CinemaLayout;
+import org.example.cinemamanagement.dto.cinema.CinemaLayoutDTO;
 import org.example.cinemamanagement.payload.request.AddCinemaLayoutRequest;
 import org.example.cinemamanagement.payload.response.DataResponse;
 import org.example.cinemamanagement.service.CinemaLayoutService;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController

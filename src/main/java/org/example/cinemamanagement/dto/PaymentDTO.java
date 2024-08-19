@@ -1,6 +1,7 @@
 package org.example.cinemamanagement.dto;
 
 import lombok.Data;
+import org.example.cinemamanagement.dto.cinema.CinemaDTO;
 
 import java.util.Date;
 import java.util.UUID;

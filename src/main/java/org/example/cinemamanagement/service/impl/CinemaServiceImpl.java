@@ -1,13 +1,10 @@
 package org.example.cinemamanagement.service.impl;
 
-import org.example.cinemamanagement.dto.CinemaDTO;
-import org.example.cinemamanagement.dto.CinemaLayoutDTO;
-import org.example.cinemamanagement.dto.CinemaManagerDTO;
-import org.example.cinemamanagement.mapper.CinemaLayoutMapper;
+import org.example.cinemamanagement.dto.cinema.CinemaDTO;
+import org.example.cinemamanagement.dto.cinema.CinemaLayoutDTO;
+import org.example.cinemamanagement.dto.cinema.CinemaManagerDTO;
 import org.example.cinemamanagement.mapper.CinemaMapper;
 import org.example.cinemamanagement.model.Cinema;
-import org.example.cinemamanagement.model.Account;
-import org.example.cinemamanagement.model.ManagerAccount;
 import org.example.cinemamanagement.payload.request.AddCinemaRequest;
 import org.example.cinemamanagement.repository.*;
 import org.example.cinemamanagement.service.CinemaService;
@@ -15,7 +12,6 @@ import org.example.cinemamanagement.utils.ConvertJsonNameToTypeName;
 import org.example.cinemamanagement.pagination.CursorBasedPageable;
 import org.example.cinemamanagement.payload.response.PageResponse;
 import org.example.cinemamanagement.pagination.PageSpecification;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -27,15 +23,15 @@ import java.util.stream.Collectors;
 public class CinemaServiceImpl implements CinemaService {
 
     CinemaRepository cinemaRepository;
-    UserRepository userRepository;
+    AccountRepository accountRepository;
     CinemaLayoutRepository cinemaLayoutRepository;
     CinemaProviderRepository cinemaProviderRepository;
 
-    ManagerAccountRepository managerAccountRepository;
+    BusinessAccountRepository managerAccountRepository;
 
-    CinemaServiceImpl(CinemaRepository cinemaRepository, UserRepository userRepository, CinemaLayoutRepository cinemaLayoutRepository, CinemaProviderRepository cinemaProviderRepository, ManagerAccountRepository managerAccountRepository) {
+    CinemaServiceImpl(CinemaRepository cinemaRepository, AccountRepository accountRepository, CinemaLayoutRepository cinemaLayoutRepository, CinemaProviderRepository cinemaProviderRepository, BusinessAccountRepository managerAccountRepository) {
         this.cinemaRepository = cinemaRepository;
-        this.userRepository = userRepository;
+        this.accountRepository = accountRepository;
         this.cinemaLayoutRepository = cinemaLayoutRepository;
         this.cinemaProviderRepository = cinemaProviderRepository;
         this.managerAccountRepository = managerAccountRepository;
@@ -67,13 +63,6 @@ public class CinemaServiceImpl implements CinemaService {
                         .orElseThrow(() ->
                                 new RuntimeException("Cinema Provider not found with id: " +
                                         addCinemaRequest.getProviderId())))
-                .managerAccounts(
-                        addCinemaRequest.getManagerIds().stream()
-                                .map(id -> managerAccountRepository.findById(id)
-                                        .orElseThrow(() ->
-                                                new RuntimeException("Manager Account not found with id: " + id)))
-                                .collect(Collectors.toList())
-                )
                 .build();
 
         cinemaRepository.save(cinema);

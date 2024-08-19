@@ -1,6 +1,6 @@
 package org.example.cinemamanagement.mapper;
 
-import org.example.cinemamanagement.dto.CinemaProviderDTO;
+import org.example.cinemamanagement.dto.cinema.CinemaProviderDTO;
 import org.example.cinemamanagement.model.CinemaProvider;
 
 public class CinemaProviderMapper {

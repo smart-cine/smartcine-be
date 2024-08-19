@@ -1,10 +1,8 @@
 package org.example.cinemamanagement.controller;
 
-import org.example.cinemamanagement.dto.CinemaProviderDTO;
-import org.example.cinemamanagement.model.CinemaProvider;
+import org.example.cinemamanagement.dto.cinema.CinemaProviderDTO;
 import org.example.cinemamanagement.payload.response.DataResponse;
 import org.example.cinemamanagement.service.CinemaProviderService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

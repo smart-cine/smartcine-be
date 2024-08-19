@@ -1,9 +1,9 @@
 package org.example.cinemamanagement.service;
 
 
-import org.example.cinemamanagement.dto.CinemaDTO;
-import org.example.cinemamanagement.dto.CinemaLayoutDTO;
-import org.example.cinemamanagement.dto.CinemaManagerDTO;
+import org.example.cinemamanagement.dto.cinema.CinemaDTO;
+import org.example.cinemamanagement.dto.cinema.CinemaLayoutDTO;
+import org.example.cinemamanagement.dto.cinema.CinemaManagerDTO;
 import org.example.cinemamanagement.model.Cinema;
 import org.example.cinemamanagement.payload.request.AddCinemaRequest;
 import org.example.cinemamanagement.pagination.CursorBasedPageable;

@@ -39,6 +39,7 @@ public class Comment {
                     CascadeType.REFRESH
             }
     )
+    @JoinColumn(name = "dest_film_id")
     private Film film;
 
     @Column(name = "type")

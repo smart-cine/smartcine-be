@@ -9,6 +9,8 @@ import org.hibernate.annotations.GenericGenerator;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Getter
 @Setter
 @Builder
@@ -24,7 +26,7 @@ public class CinemaRoom {
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade =
+    @ManyToOne(cascade =
             {CascadeType.DETACH,
                     CascadeType.MERGE,
                     CascadeType.PERSIST,
@@ -32,21 +34,22 @@ public class CinemaRoom {
     )
     private Cinema cinema;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {
+    @ManyToOne(cascade = {
             CascadeType.DETACH,
             CascadeType.MERGE,
             CascadeType.PERSIST,
             CascadeType.REFRESH}
     )
+    @JoinColumn(name = "cinema_layout_id")
     private CinemaLayout cinemaLayout;
 
     @JsonIgnore
     @OneToMany(mappedBy = "cinemaRoom", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Perform> performs;
 
-    @Column(name = "type")
-    @Enumerated(EnumType.STRING)
-    private RoomType roomType;
+//    @Column(name = "type")
+//    @Enumerated(EnumType.STRING)
+//    private RoomType roomType;
 
     @Column(name = "name")
     private String name;

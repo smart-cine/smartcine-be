@@ -1,15 +1,14 @@
 package org.example.cinemamanagement.service.impl;
 
-import org.example.cinemamanagement.dto.FilmDTO;
+import org.example.cinemamanagement.dto.film.FilmDTO;
 import org.example.cinemamanagement.mapper.FilmMapper;
 import org.example.cinemamanagement.model.CinemaProvider;
 import org.example.cinemamanagement.model.Film;
-import org.example.cinemamanagement.model.ManagerAccount;
 import org.example.cinemamanagement.model.Tag;
 import org.example.cinemamanagement.payload.request.AddFilmRequest;
 import org.example.cinemamanagement.repository.CinemaProviderRepository;
 import org.example.cinemamanagement.repository.FilmRepository;
-import org.example.cinemamanagement.repository.ManagerAccountRepository;
+import org.example.cinemamanagement.repository.BusinessAccountRepository;
 import org.example.cinemamanagement.repository.TagRepository;
 import org.example.cinemamanagement.service.FilmService;
 import org.example.cinemamanagement.utils.ConvertJsonNameToTypeName;
@@ -30,11 +29,11 @@ public class FilmServiceImpl implements FilmService {
     FilmRepository filmRepository;
     CinemaProviderRepository cinemaProviderRepository;
 
-    ManagerAccountRepository managerAccountRepository;
+    BusinessAccountRepository managerAccountRepository;
 
 
     @Autowired
-    public FilmServiceImpl(TagRepository tagRepository, FilmRepository filmRepository, CinemaProviderRepository cinemaProviderRepository, ManagerAccountRepository managerAccountRepository) {
+    public FilmServiceImpl(TagRepository tagRepository, FilmRepository filmRepository, CinemaProviderRepository cinemaProviderRepository, BusinessAccountRepository managerAccountRepository) {
         this.tagRepository = tagRepository;
         this.filmRepository = filmRepository;
         this.cinemaProviderRepository = cinemaProviderRepository;
@@ -55,7 +54,7 @@ public class FilmServiceImpl implements FilmService {
             throw new RuntimeException("Film already exists");
         }
         Optional<CinemaProvider> cinemaProvider = cinemaProviderRepository.findById(addFilmRequest.getCinemaProviderId());
-        Optional<ManagerAccount> managerAccount = managerAccountRepository.findById(addFilmRequest.getManagerId());
+        Optional<org.example.cinemamanagement.model.BusinessAccount> managerAccount = managerAccountRepository.findById(addFilmRequest.getManagerId());
 
         if (cinemaProvider.isEmpty()) {
             throw new RuntimeException("Cinema provider id is invalid");
@@ -79,7 +78,6 @@ public class FilmServiceImpl implements FilmService {
                 .language(addFilmRequest.getLanguage())
                 .backgroundUrl(addFilmRequest.getBackgroundUrl())
                 .cinemaProvider(cinemaProvider.get())
-                .managerAccount(managerAccount.get())
                 .tags(addFilmRequest.getTags().stream()
                         .map(tagName -> {
                             Optional<Tag> tempTag = tagRepository.findById(tagName);

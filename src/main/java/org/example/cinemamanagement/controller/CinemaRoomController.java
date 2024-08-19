@@ -21,15 +21,13 @@ public class CinemaRoomController {
 
     @GetMapping
     public ResponseEntity<?> getAllRooms(CursorBasedPageable cursorBasedPageable,
-                                         @RequestParam(required = false, name = "cinema-id") UUID cinemaId) {
+                                         @RequestParam(required = false, name = "cinema_id") UUID cinemaId) {
         var specification = new PageSpecification<CinemaRoom>
                 ("name", "cinema", cinemaId, cursorBasedPageable);
 
         return ResponseEntity.ok(
                 cinemaRoomService.getAllCinemaRooms(cursorBasedPageable, specification)
         );
-
-
     }
 
     @GetMapping("/{id}")
@@ -38,7 +36,6 @@ public class CinemaRoomController {
         dataResponse.setMessage("Get cinema room by id successfully");
         dataResponse.setSuccess(true);
         dataResponse.setData(cinemaRoomService.getCinemaRoomById(id));
-
         return ResponseEntity.ok(dataResponse);
     }
 
@@ -55,12 +52,12 @@ public class CinemaRoomController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateRoom(@PathVariable UUID id, @RequestBody AddOrUpdateCinemaRoom addOrUpdateCinemaRoom) {
-        cinemaRoomService.updateCinemaRoom(id, addOrUpdateCinemaRoom);
         return ResponseEntity.ok(
                 DataResponse
                         .builder()
                         .message("Room updated")
                         .success(true)
+                        .data(cinemaRoomService.updateCinemaRoom(id, addOrUpdateCinemaRoom))
                         .build()
         );
     }

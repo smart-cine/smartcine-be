@@ -21,9 +21,6 @@ public class AddPerformRequest {
     @JsonProperty("film_id")
     private UUID filmId;
 
-    @JsonProperty("manager_id")
-    private UUID managerId;
-
     @JsonProperty("view_type")
     @Enumerated(EnumType.STRING)
     private ViewType viewType;
