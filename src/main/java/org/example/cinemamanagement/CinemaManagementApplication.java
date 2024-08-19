@@ -15,6 +15,5 @@ import java.time.Duration;
 public class CinemaManagementApplication {
     public static void main(String[] args) {
         SpringApplication.run(CinemaManagementApplication.class, args);
-        Jedis jedisResource = new JedisPool(new JedisPoolConfig(), "localhost", 6379).getResource();
     }
 }

@@ -10,9 +10,11 @@ import java.util.UUID;
 @Builder
 public class CinemaProviderDTO {
     private UUID id;
+
     private String name;
 
     @JsonProperty("logo_url")
+
     private String logoUrl;
 
     @JsonProperty("background_url")
