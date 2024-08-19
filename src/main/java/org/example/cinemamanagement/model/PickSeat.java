@@ -27,6 +27,7 @@ public class PickSeat {
             CascadeType.PERSIST,
             CascadeType.REFRESH}
     )
+    @JoinColumn(name = "account_id")
     private Account account;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH,
@@ -36,9 +37,6 @@ public class PickSeat {
     )
     @JoinColumn(name = "perform_id")
     private Perform perform;
-
-    @Column(name = "code")
-    private String code;
 
     @Column(name ="created_at")
     private Timestamp createAt;
@@ -50,5 +48,4 @@ public class PickSeat {
     )
     @JoinColumn(name = "layout_seat_id")
     private CinemaLayoutSeat layoutSeat;
-
 }

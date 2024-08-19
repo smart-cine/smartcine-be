@@ -1,4 +1,4 @@
-package org.example.cinemamanagement.dto;
+package org.example.cinemamanagement.dto.film;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -41,7 +41,4 @@ public class FilmDTO {
 
     @JsonProperty("provider_id")
      private UUID cinemaProviderId;
-
-    @JsonProperty("manager_id")
-    private UUID managerId;
 }

@@ -1,6 +1,6 @@
 package org.example.cinemamanagement.controller;
 
-import org.example.cinemamanagement.dto.PerformDTO;
+import org.example.cinemamanagement.dto.perform.PerformDTO;
 import org.example.cinemamanagement.model.Perform;
 import org.example.cinemamanagement.pagination.PageSpecificationPerform;
 import org.example.cinemamanagement.payload.request.AddPerformRequest;
@@ -9,9 +9,7 @@ import org.example.cinemamanagement.service.PerformService;
 import org.example.cinemamanagement.pagination.CursorBasedPageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
 
 import java.util.Map;
 import java.util.UUID;
@@ -27,7 +25,7 @@ public class PerformController {
     }
 
     @GetMapping("perform")
-    public ResponseEntity<?> getPerforms(CursorBasedPageable cursorBasedPageable, @RequestParam(required = true, name = "cinema-id") UUID cinemaId) {
+    public ResponseEntity<?> getPerforms(CursorBasedPageable cursorBasedPageable, @RequestParam(required = true, name = "cinema_id") UUID cinemaId) {
         try {
             var specification = new PageSpecificationPerform<Perform>("startTime",
                     cursorBasedPageable,

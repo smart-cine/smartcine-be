@@ -34,18 +34,10 @@ public class Cinema {
             CascadeType.PERSIST,
             CascadeType.REFRESH}
     )
-    @JoinColumn(name = "provider_id")
+    @JoinColumn(name = "cinema_provider_id")
     private CinemaProvider cinemaProvider;
 
-    @ManyToMany(cascade = {
-            CascadeType.DETACH,
-            CascadeType.MERGE,
-            CascadeType.PERSIST,
-            CascadeType.REFRESH
-    }, fetch = FetchType.LAZY)
-    @JoinTable(name = "_cinema_manager",
-            joinColumns = @JoinColumn(name = "cinema_id"),
-            inverseJoinColumns = @JoinColumn(name = "manager_id"))
-    private List<ManagerAccount> managerAccounts;
-
+    @JsonIgnore
+    @OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<BankCinema> bankCinemas;
 }

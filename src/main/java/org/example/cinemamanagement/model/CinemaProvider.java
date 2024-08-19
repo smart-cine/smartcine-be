@@ -38,4 +38,16 @@ public class CinemaProvider {
     @JsonIgnore
     @OneToMany(mappedBy = "cinemaProvider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Film> films;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "cinemaProvider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CinemaLayout> cinemaLayouts;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "cinemaProvider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<BusinessBank> businessBanks;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "cinemaProvider", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<BusinessProvider> businessProviders;
 }

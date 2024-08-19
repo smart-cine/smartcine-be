@@ -1,4 +1,4 @@
-package org.example.cinemamanagement.dto;
+package org.example.cinemamanagement.dto.perform;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.EnumType;
@@ -34,7 +34,4 @@ public class PerformDTO {
     private Timestamp startTime;
     @JsonProperty("end_time")
     private Timestamp endTime;
-
-    @JsonProperty("manager_id")
-    private UUID managerId;
 }

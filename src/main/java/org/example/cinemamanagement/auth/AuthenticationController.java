@@ -20,7 +20,7 @@ public class AuthenticationController {
             @RequestBody RegisterRequest request
     ) {
         AuthenticationResponse authRes =service.register(request);
-        DataResponse response = DataResponse.builder()
+        DataResponse<AuthenticationResponse> response = DataResponse.<AuthenticationResponse>builder()
                 .message("Register successfully")
                 .success(true)
                 .data(authRes)
@@ -33,7 +33,7 @@ public class AuthenticationController {
             @RequestBody AuthenticationRequest request
     ) {
         AuthenticationResponse authenRes = service.authenticate(request);
-        DataResponse response = DataResponse.builder()
+        DataResponse<AuthenticationResponse> response = DataResponse.<AuthenticationResponse>builder()
                 .message("Login successfully")
                 .success(true)
                 .data(authenRes)

@@ -8,7 +8,7 @@ import org.example.cinemamanagement.payload.request.AddCommentRequest;
 import org.example.cinemamanagement.payload.response.CommentResponse;
 import org.example.cinemamanagement.repository.CommentRepository;
 import org.example.cinemamanagement.repository.FilmRepository;
-import org.example.cinemamanagement.repository.UserRepository;
+import org.example.cinemamanagement.repository.AccountRepository;
 import org.example.cinemamanagement.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -28,7 +27,7 @@ public class CommentServiceImpl implements CommentService {
     private FilmRepository filmRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
 
 
     // Fix.
@@ -45,7 +44,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public String addComment(AddCommentRequest addCommentRequest) {
         Account accountTemp = (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Account account = userRepository.findById(accountTemp.getId()).orElseThrow(
+        Account account = accountRepository.findById(accountTemp.getId()).orElseThrow(
                 () -> new RuntimeException("User not found")
         );
 

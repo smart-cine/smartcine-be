@@ -1,6 +1,6 @@
 package org.example.cinemamanagement.service;
 
-import org.example.cinemamanagement.dto.CinemaLayoutDTO;
+import org.example.cinemamanagement.dto.cinema.CinemaLayoutDTO;
 import org.example.cinemamanagement.payload.request.AddCinemaLayoutRequest;
 
 import java.util.List;

@@ -22,12 +22,13 @@ public class CinemaLayoutGroup {
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @ManyToOne( fetch = FetchType.LAZY, cascade = {
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {
             CascadeType.DETACH,
             CascadeType.MERGE,
             CascadeType.PERSIST,
             CascadeType.REFRESH
     })
+    @JoinColumn(name = "cinema_layout_id")
     private CinemaLayout cinemaLayout;
 
     private String name;

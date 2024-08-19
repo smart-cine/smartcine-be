@@ -1,8 +1,7 @@
 package org.example.cinemamanagement.configuration;
 
 import lombok.RequiredArgsConstructor;
-import org.example.cinemamanagement.repository.UserRepository;
-import org.example.cinemamanagement.service.impl.RedisServiceImpl;
+import org.example.cinemamanagement.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,11 +17,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class ApplicationConfig {
 
     @Autowired
-    UserRepository userRepository;
+    AccountRepository accountRepository;
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findUserByEmail(username).orElseThrow(() -> new RuntimeException("User not found"));
+        return username -> accountRepository.findUserByEmail(username).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @Bean

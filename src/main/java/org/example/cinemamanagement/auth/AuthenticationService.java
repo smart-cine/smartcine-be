@@ -3,26 +3,26 @@ package org.example.cinemamanagement.auth;
 import lombok.RequiredArgsConstructor;
 import org.example.cinemamanagement.common.Role;
 import org.example.cinemamanagement.service.JwtService;
-import org.example.cinemamanagement.mapper.AccountMapper;
 import org.example.cinemamanagement.model.Account;
-import org.example.cinemamanagement.repository.UserRepository;
+import org.example.cinemamanagement.repository.AccountRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
     private final JwtService jwtService;
+    private final AccountRepository accountRepository;
+    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
-        userRepository.findUserByEmail(request.getEmail()).ifPresent(user -> {
+        accountRepository.findUserByEmail(request.getEmail()).ifPresent(user -> {
             throw new RuntimeException("User with email " + request.getEmail() + " already exists");
         });
 
@@ -32,13 +32,16 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
-        userRepository.save(user);
+        accountRepository.save(user);
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse
                 .builder()
                 .token(jwtToken)
-                .user(AccountMapper.toDTO(user))
+                .name( user.getName())
+                .email(user.getEmail())
+                .role(user.getRole())
                 .build();
+
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
@@ -53,12 +56,14 @@ public class AuthenticationService {
             throw new AuthenticationCredentialsNotFoundException("Invalid email or password.");
         }
 
-        Account user = userRepository.findUserByEmail(request.getEmail()).orElseThrow();
+        Account user = accountRepository.findUserByEmail(request.getEmail()).orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse
                 .builder()
                 .token(jwtToken)
-                .user(AccountMapper.toDTO(user))
+                .name( user.getName())
+                .email(user.getEmail())
+                .role(user.getRole())
                 .build();
 
     }

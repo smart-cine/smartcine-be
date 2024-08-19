@@ -1,4 +1,4 @@
-package org.example.cinemamanagement.dto;
+package org.example.cinemamanagement.dto.cinema;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -17,10 +17,6 @@ public class CinemaDTO {
     UUID id;
     String name;
     String address;
-
     @JsonProperty("provider_id")
     UUID providerId;
-
-    @JsonProperty("manager_ids")
-    List<UUID> managerIds;
 }

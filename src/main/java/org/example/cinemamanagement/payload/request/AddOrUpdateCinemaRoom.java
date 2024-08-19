@@ -22,7 +22,4 @@ public class AddOrUpdateCinemaRoom {
     private UUID cinemaId;
     @JsonProperty("cinema_layout_id")
     private UUID cinemaLayoutId;
-
-    @Enumerated(EnumType.STRING)
-    private RoomType type;
 }

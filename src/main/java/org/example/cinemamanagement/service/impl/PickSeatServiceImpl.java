@@ -10,7 +10,7 @@ import org.example.cinemamanagement.payload.response.PickSeatResponse;
 import org.example.cinemamanagement.repository.CinemaLayoutSeatRepository;
 import org.example.cinemamanagement.repository.PerformRepository;
 import org.example.cinemamanagement.repository.PickSeatRepository;
-import org.example.cinemamanagement.repository.UserRepository;
+import org.example.cinemamanagement.repository.AccountRepository;
 import org.example.cinemamanagement.service.PickSeatService;
 import org.example.cinemamanagement.service.SocketIOService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +27,18 @@ public class PickSeatServiceImpl implements PickSeatService {
     PickSeatRepository pickSeatRepository;
     PerformRepository performRepository;
     CinemaLayoutSeatRepository cinemaLayoutSeatRepository;
-    UserRepository userRepository;
+    AccountRepository accountRepository;
     SocketIOService socketIOService;
 
     @Autowired
-    public PickSeatServiceImpl(PickSeatRepository pickSeatRepository, PerformRepository performRepository, UserRepository userRepository,
+    public PickSeatServiceImpl(PickSeatRepository pickSeatRepository, PerformRepository performRepository, AccountRepository accountRepository,
                                CinemaLayoutSeatRepository cinemaLayoutSeatRepository,
                                SocketIOService socketIOService
     ) {
 
         this.pickSeatRepository = pickSeatRepository;
         this.performRepository = performRepository;
-        this.userRepository = userRepository;
+        this.accountRepository = accountRepository;
         this.cinemaLayoutSeatRepository = cinemaLayoutSeatRepository;
         this.socketIOService = socketIOService;
     }

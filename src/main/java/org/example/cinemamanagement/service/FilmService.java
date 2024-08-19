@@ -1,6 +1,6 @@
 package org.example.cinemamanagement.service;
 
-import org.example.cinemamanagement.dto.FilmDTO;
+import org.example.cinemamanagement.dto.film.FilmDTO;
 import org.example.cinemamanagement.model.Film;
 import org.example.cinemamanagement.payload.request.AddFilmRequest;
 import org.example.cinemamanagement.pagination.CursorBasedPageable;

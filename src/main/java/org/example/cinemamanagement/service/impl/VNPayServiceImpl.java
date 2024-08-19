@@ -26,9 +26,9 @@ import java.time.Duration;
 import java.util.*;
 
 @Service
-public class PaymentServiceImpl implements PaymentService {
+public class VNPayServiceImpl implements PaymentService {
     private PaymentRepository paymentRepository;
-    private UserRepository userRepository;
+    private AccountRepository accountRepository;
     private CinemaRepository cinemaRepository;
     private PickSeatRepository pickSeatRepository;
     private ModelMapper modelMapper;
@@ -38,16 +38,16 @@ public class PaymentServiceImpl implements PaymentService {
     private CinemaLayoutSeatRepository cinemaLayoutSeatRepository;
 
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository,
-                              UserRepository userRepository,
-                              CinemaRepository cinemaRepository,
-                              PickSeatRepository pickSeatRepository,
-                              ModelMapper modelMapper,
-                              PerformRepository performRepository,
-                              CinemaLayoutSeatRepository cinemaLayoutSeatRepository
+    public VNPayServiceImpl(PaymentRepository paymentRepository,
+                            AccountRepository accountRepository,
+                            CinemaRepository cinemaRepository,
+                            PickSeatRepository pickSeatRepository,
+                            ModelMapper modelMapper,
+                            PerformRepository performRepository,
+                            CinemaLayoutSeatRepository cinemaLayoutSeatRepository
     ) {
         this.paymentRepository = paymentRepository;
-        this.userRepository = userRepository;
+        this.accountRepository = accountRepository;
         this.cinemaRepository = cinemaRepository;
         this.pickSeatRepository = pickSeatRepository;
         this.modelMapper = modelMapper;
@@ -67,7 +67,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public String addPayment(AddPaymentRequest req) {
         Account accountTemp = (Account) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        Account account = userRepository.findById(accountTemp.getId()).orElseThrow(
+        Account account = accountRepository.findById(accountTemp.getId()).orElseThrow(
                 () -> new RuntimeException("User not found")
         );
 
@@ -95,6 +95,7 @@ public class PaymentServiceImpl implements PaymentService {
             if (!RedisServiceImpl.exists("pickseat:" + orderRequestDTO.getPerformId() + ":" + account.getId())) {
                 throw new RuntimeException("You have not picked any seat yet");
             }
+
 
             Payment paymentTemp = paymentRepository.findTheLastPaymentByAccountIdAndPerformId(
                     account.getId(),
@@ -138,20 +139,19 @@ public class PaymentServiceImpl implements PaymentService {
 
 
             Payment payment = Payment.builder()
-                    .account(userRepository.findById(account.getId()).orElseThrow(() -> new RuntimeException("User not found")))
+                    .account(accountRepository.findById(account.getId()).orElseThrow(() -> new RuntimeException("User not found")))
                     // convert createDate variable to timestamp type
 
-                    .dateCreate(Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(
+                    .dateCreated(Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(
                             formatter.parse(createDate))
                     ))
-                    .dateExpire(
+                    .dateExpired(
                             Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(
                                     formatter.parse(expireDate))
                             )
                     )
                     .perform(performRepository.findById(orderRequestDTO.getPerformId()).orElseThrow(() -> new RuntimeException("Perform not found")))
                     .status(Status.PENDING)
-                    .vnpTxnRef(payload.get("vnp_TxnRef").toString())
                     .item(null)
                     .build();
 
@@ -206,34 +206,48 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Transactional
     public void handlePayment(Map<String, String> params) {
+        String vnpResponseCode = params.get("vnp_ResponseCode");
+        String vnpTxnRef = params.get("vnp_TxnRef");
+        String vnpAmount = params.get("vnp_Amount");
+        String vnpOrderInfo = params.get("vnp_OrderInfo");
+        String vnpTransactionNo = params.get("vnp_TransactionNo");
+        String vnpTransactionStatus = params.get("vnp_TransactionStatus");
+        String vnpPayDate = params.get("vnp_PayDate");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+
+        Payment payment = new Payment();
+
+
         try {
-            String vnpResponseCode = params.get("vnp_ResponseCode");
-            String vnpTxnRef = params.get("vnp_TxnRef");
-            String vnpAmount = params.get("vnp_Amount");
-            String vnpOrderInfo = params.get("vnp_OrderInfo");
-            String vnpTransactionNo = params.get("vnp_TransactionNo");
-            String vnpTransactionStatus = params.get("vnp_TransactionStatus");
-            String vnpPayDate = params.get("vnp_PayDate");
 
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-            Payment payment = paymentRepository.findByVnpTxnRefAndDateCreate
-                    (vnpTxnRef,
-                            Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                                    .format(new SimpleDateFormat("yyyyMMddHHmmss").parse(vnpPayDate)))
-                    );
-
+            payment = paymentRepository.findByVnpTxnRefAndDateCreate(
+                    Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                            .format(new SimpleDateFormat("yyyyMMddHHmmss").parse(vnpPayDate)))
+            );
             switch (vnpResponseCode) {
                 case "00":
                     payment.setStatus(Status.SUCCESS);
                     Set<String> seatIds = RedisServiceImpl.smembers("pickseat:" + payment.getPerform().getId() + ":" + payment.getAccount().getId());
                     for (String seatId : seatIds) {
-                        pickSeatRepository.save(PickSeat.builder()
-                                .account(payment.getAccount())
-                                .perform(payment.getPerform())
-                                .layoutSeat(cinemaLayoutSeatRepository.findById(UUID.fromString(seatId)).orElseThrow(() -> new RuntimeException("Seat not found")))
-                                .createAt(Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(
-                                        formatter.parse(vnpPayDate))))
-                                .build());
+                        try {
+
+                            pickSeatRepository.save(PickSeat.builder()
+                                    .account(payment.getAccount())
+                                    .perform(payment.getPerform())
+                                    .layoutSeat(cinemaLayoutSeatRepository.findById(UUID.fromString(seatId)).orElseThrow(() -> new RuntimeException("Seat not found")))
+                                    .createAt(Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(
+                                            formatter.parse(vnpPayDate))))
+                                    .build());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            payment.setStatus(Status.FAILED);
+                            paymentRepository.save(payment);
+
+                            // make a request to refund
+
+                            throw new RuntimeException("Error: Some seats are already booked by others. Please try again.");
+
+                        }
                     }
                     RedisServiceImpl.del("pickseat:" + payment.getPerform().getId() + ":" + payment.getAccount().getId());
                     break;
@@ -251,6 +265,9 @@ public class PaymentServiceImpl implements PaymentService {
 
         } catch (Exception e) {
             e.printStackTrace();
+            paymentRepository.save(payment);
+
+            throw new RuntimeException("Error: " + e.getMessage());
         }
     }
 

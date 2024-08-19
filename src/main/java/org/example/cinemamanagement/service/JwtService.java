@@ -18,77 +18,25 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Service
-public class JwtService {
-    private static final String SECRET_KEY = "9a4f2c8d3b7a1e6f45c8a0b3f267d8b1d4e6f3c8a9d2b5f8e3a9c8b5f6v8a3d9";
+public interface JwtService {
 
-    private Key getSigninKey() {
-        byte[] keyBites = Decoders.BASE64.decode(SECRET_KEY);
-        return Keys.hmacShaKeyFor(keyBites);
-    }
 
-    public Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSigninKey()).build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
+    public Claims extractAllClaims(String token);
 
     //getAuthorities
-    public List<String> getAuthorities(String token) {
-//        return List.of(new SimpleGrantedAuthority(role.name()));
-        Claims claims = extractAllClaims(token);
-        return claims.get("authorities", List.class);
-    }
+    public List<String> getAuthorities(String token);
 
-    public <T> T extractClaim(String token, Function<Claims, T> function) {
-        Claims claims = extractAllClaims(token);
-        return function.apply(claims);
-    }
+    public <T> T extractClaim(String token, Function<Claims, T> function);
 
-    public String extractUserName(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
+    public String extractUserName(String token);
 
-    public String extractId(String token) {
-        return extractClaim(token, Claims::getId);
-    }
+    public String extractId(String token);
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetails userDetails);
 
-        return generateToken(
-                Map.of("authorities", userDetails
-                        .getAuthorities()
-                        .stream()
-                        .map(String::valueOf)
-                        .collect(Collectors.toList())
-                )
-                , (Account) userDetails);
-    }
+    public String generateToken(Map<String, Object> extraClaims, Account userDetails);
 
-    public String generateToken(Map<String, Object> extraClaims, Account userDetails) {
-        RedisServiceImpl.getJedisResource().set(userDetails.getEmail(), userDetails.getId().toString());
-        RedisServiceImpl.expire(userDetails.getEmail(), Duration.ofDays(2).getSeconds());
+    public boolean isTokenValid(String token, String userNameGetedFromDb);
 
-        return Jwts
-                .builder()
-                .setClaims(extraClaims)
-                .setId(String.valueOf(userDetails.getId()))
-                .setSubject(userDetails.getEmail())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + Duration.ofDays(30).toMillis()))
-                .signWith(getSigninKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    public boolean isTokenValid(String token, String userNameGetedFromDb) {
-        final String userName = extractUserName(token);
-        return userName.equals(userNameGetedFromDb) && !isTokenExpired(token);
-    }
-
-    public boolean isTokenExpired(String token) {
-        Date date = extractClaim(token, Claims::getExpiration);
-        return new Date().after(date);
-    }
+    public boolean isTokenExpired(String token);
 }

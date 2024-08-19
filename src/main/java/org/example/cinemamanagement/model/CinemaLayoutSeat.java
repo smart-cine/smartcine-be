@@ -22,7 +22,7 @@ public class CinemaLayoutSeat {
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
-    @ManyToOne( fetch = FetchType.LAZY, cascade = {
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {
             CascadeType.DETACH,
             CascadeType.MERGE,
             CascadeType.PERSIST,
@@ -31,15 +31,18 @@ public class CinemaLayoutSeat {
     @JoinColumn(name = "group_id")
     private CinemaLayoutGroup cinemaLayoutGroup;
 
-    @ManyToOne( fetch = FetchType.LAZY, cascade = {
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {
             CascadeType.DETACH,
             CascadeType.MERGE,
             CascadeType.PERSIST,
             CascadeType.REFRESH
     })
-    @JoinColumn(name = "layout_id")
+    @JoinColumn(name = "cinema_layout_id")
     private CinemaLayout cinemaLayout;
 
+    private Integer x;
+    private Integer y;
+    private String code;
     @OneToMany(mappedBy = "layoutSeat", fetch = FetchType.LAZY, cascade = {
             CascadeType.DETACH,
             CascadeType.MERGE,
@@ -47,8 +50,4 @@ public class CinemaLayoutSeat {
             CascadeType.REFRESH
     })
     private List<PickSeat> pickSeats;
-
-    private String code;
-
-    private Boolean available;
 }

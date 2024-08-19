@@ -1,6 +1,6 @@
 package org.example.cinemamanagement.service.impl;
 
-import org.example.cinemamanagement.dto.CinemaLayoutDTO;
+import org.example.cinemamanagement.dto.cinema.CinemaLayoutDTO;
 import org.example.cinemamanagement.mapper.CinemaLayoutMapper;
 import org.example.cinemamanagement.model.CinemaLayout;
 import org.example.cinemamanagement.payload.request.AddCinemaLayoutRequest;
@@ -40,12 +40,9 @@ public class CinemaLayoutServiceImpl implements CinemaLayoutService {
     @Override
     @Transactional
     public CinemaLayoutDTO addCinemaLayout(AddCinemaLayoutRequest cinemaLayoutRequest) {
-
-
         CinemaLayout layout = CinemaLayout.builder()
                 .columns(cinemaLayoutRequest.getColumns())
                 .rows(cinemaLayoutRequest.getRows())
-                .managerAccount(null)
                 .build();
 
         cinemaLayoutRepository.save(layout);

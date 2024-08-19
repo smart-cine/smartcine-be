@@ -1,11 +1,10 @@
 package org.example.cinemamanagement.service.impl;
 
-import org.example.cinemamanagement.dto.CinemaProviderDTO;
+import org.example.cinemamanagement.dto.cinema.CinemaProviderDTO;
 import org.example.cinemamanagement.mapper.CinemaProviderMapper;
 import org.example.cinemamanagement.model.CinemaProvider;
 import org.example.cinemamanagement.repository.CinemaProviderRepository;
 import org.example.cinemamanagement.service.CinemaProviderService;
-import org.modelmapper.internal.bytebuddy.asm.Advice;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,9 +26,14 @@ public class CinemaProviderServiceImpl implements CinemaProviderService {
     @Override
     public List<CinemaProviderDTO> getAllCinemaProviders() {
 
-        return cinemaProviderRepository.findAll().stream()
+        long start = System.currentTimeMillis();
+         cinemaProviderRepository.findAll().stream()
                 .map(CinemaProviderMapper::toDTO)
                 .collect(Collectors.toList());
+        long end = System.currentTimeMillis();
+        System.out.println("Time taken to fetch all cinema providers: " + (end - start) + "ms");
+
+        return null;
     }
 
     @Override

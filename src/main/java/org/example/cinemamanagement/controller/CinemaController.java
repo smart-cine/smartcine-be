@@ -1,6 +1,6 @@
 package org.example.cinemamanagement.controller;
 
-import org.example.cinemamanagement.dto.CinemaDTO;
+import org.example.cinemamanagement.dto.cinema.CinemaDTO;
 import org.example.cinemamanagement.model.Cinema;
 import org.example.cinemamanagement.payload.request.AddCinemaRequest;
 import org.example.cinemamanagement.payload.response.DataResponse;

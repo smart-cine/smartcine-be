@@ -9,7 +9,7 @@ import org.example.cinemamanagement.common.Status;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Timestamp;
-import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -41,19 +41,25 @@ public class Payment {
 
 
     @Column(name = "date_created")
-    private Timestamp dateCreate;
+    private Timestamp dateCreated;
 
     @Column(name = "date_expired")
-    private Timestamp dateExpire;
+    private Timestamp dateExpired;
 
-    @Column(name = "vnp_txn_ref")
-    private String vnpTxnRef;
+
+    @ManyToMany(mappedBy = "payments", cascade = {CascadeType.DETACH,
+            CascadeType.MERGE,
+            CascadeType.PERSIST,
+            CascadeType.REFRESH}, fetch = FetchType.LAZY)
+    private List<Item> item;
+
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH,
             CascadeType.MERGE,
             CascadeType.PERSIST,
             CascadeType.REFRESH})
-    private Item item;
+    @JoinColumn(name = "business_bank_id")
+    private BusinessBank businessBank;
 
     @Enumerated(EnumType.STRING)
     private Status status;

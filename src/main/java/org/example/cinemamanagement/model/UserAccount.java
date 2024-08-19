@@ -19,4 +19,6 @@ public class UserAccount {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
+
+
 }
