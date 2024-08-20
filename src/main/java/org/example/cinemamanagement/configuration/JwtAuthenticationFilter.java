@@ -42,28 +42,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // return 404 status when direct to strange endpoint
         if (request.getRequestURI().equals("/api/v1/payment/ipn") && request.getMethod().equals("GET")) {
-            // permit all
             filterChain.doFilter(request, response);
             return;
         }
 
         if (((authorizationHeader == null) || !authorizationHeader.startsWith("Bearer ")) &&
-                (!request.getRequestURI().contains("/api/v1/user"))) {
+                (!request.getRequestURI().contains("/api/v1/account"))) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write("{\"message\": \"JWT Token is missing\"}");
             return;
-        } else if (request.getRequestURI().contains("/api/v1/user") && request.getMethod().equals("POST")) {
+        } else if (request.getRequestURI().contains("/api/v1/account") && request.getMethod().equals("POST")) {
             filterChain.doFilter(request, response);
             return;
         }
         try {
+
             jwt = authorizationHeader.substring(7);
             userEmail = jwtService.extractUserName(jwt);
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 String tempName = userService.checkExistingOfUserInDB(userEmail);
+
+                if(tempName == null) {
+                    throw new Exception("User not found");
+                }
+
                 UserDetails userDetail = Account.builder()
                         .id(UUID.fromString(jwtService.extractId(jwt)))
                         .email(tempName)

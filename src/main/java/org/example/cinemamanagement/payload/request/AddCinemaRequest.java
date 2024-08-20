@@ -14,6 +14,4 @@ public class AddCinemaRequest {
     private String name;
     @JsonProperty("provider_id")
     private UUID providerId;
-    @JsonProperty("manager_ids")
-    private List<UUID> managerIds;
 }

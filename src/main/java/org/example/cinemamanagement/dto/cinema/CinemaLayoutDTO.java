@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -14,9 +15,10 @@ import java.util.UUID;
 @NoArgsConstructor
 public class CinemaLayoutDTO {
     private UUID id;
-
-    @JsonProperty("manager_id")
-    private UUID managerId;
     private Integer rows;
     private Integer columns;
+    @JsonProperty("provider_id")
+    private UUID providerId;
+
+    private List<List<Integer>> seats;
 }

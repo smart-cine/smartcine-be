@@ -134,11 +134,11 @@ public class FilmServiceImpl implements FilmService {
         Map<String, Object> pagingMap = new HashMap<>();
         pagingMap.put("previousPageCursor", null);
         pagingMap.put("nextPageCursor", null);
-        pagingMap.put("size", cursorBasedPageable.getSize());
+        pagingMap.put("limit", cursorBasedPageable.getLimit());
         pagingMap.put("total", 0);
 
         var filmSlide = filmRepository.findAll(pageSpecification,
-                Pageable.ofSize(cursorBasedPageable.getSize()));
+                Pageable.ofSize(cursorBasedPageable.getLimit()));
 
         if (!filmSlide.hasContent()) {
             return new PageResponse<>(false, List.of(), pagingMap);
@@ -147,7 +147,7 @@ public class FilmServiceImpl implements FilmService {
         List<Film> films = filmSlide.getContent();
         pagingMap.put("previousPageCursor", cursorBasedPageable.getEncodedCursor(films.get(0).getTitle(), filmSlide.hasPrevious()));
         pagingMap.put("nextPageCursor", cursorBasedPageable.getEncodedCursor(films.get(films.size() - 1).getTitle(), filmSlide.hasNext()));
-        pagingMap.put("size", String.valueOf(cursorBasedPageable.getSize()));
+        pagingMap.put("limit", String.valueOf(cursorBasedPageable.getLimit()));
         pagingMap.put("total", String.valueOf(filmSlide.getTotalElements()));
 
         return new PageResponse<>(true, films.stream()

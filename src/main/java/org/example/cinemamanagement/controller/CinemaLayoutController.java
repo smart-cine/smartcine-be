@@ -1,6 +1,10 @@
 package org.example.cinemamanagement.controller;
 
 import org.example.cinemamanagement.dto.cinema.CinemaLayoutDTO;
+import org.example.cinemamanagement.dto.cinema.item.CinemaLayoutDTOItem;
+import org.example.cinemamanagement.model.CinemaLayout;
+import org.example.cinemamanagement.pagination.CursorBasedPageable;
+import org.example.cinemamanagement.pagination.PageSpecificationCinemaLayout;
 import org.example.cinemamanagement.payload.request.AddCinemaLayoutRequest;
 import org.example.cinemamanagement.payload.response.DataResponse;
 import org.example.cinemamanagement.service.CinemaLayoutService;
@@ -8,10 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/layout")
+@RequestMapping("/api/v1/cinema-layout")
 public class CinemaLayoutController {
 
 
@@ -23,22 +29,31 @@ public class CinemaLayoutController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllLayout() {
-        DataResponse dataResponse = DataResponse
-                .builder()
-                .data(cinemaLayoutService.getAllCinemaLayout())
-                .message("Get all layout successfully")
-                .success(true)
-                .build();
+    public ResponseEntity<?> getAllLayout(CursorBasedPageable cursorBasedPageable, @RequestParam(name = "provider_id", required = false) UUID providerId) {
+        try {
+            Map<String, Object> filters = new HashMap<>();
+            if (providerId != null)
+                filters.put("providerId", providerId);
 
-        return ResponseEntity.ok(dataResponse);
+            var specification = new PageSpecificationCinemaLayout<CinemaLayout>(
+                    "id",
+                    cursorBasedPageable,
+                    filters
+            );
+
+            return ResponseEntity.ok(cinemaLayoutService.getAllCinemaLayout(specification, cursorBasedPageable));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DataResponse<CinemaLayoutDTO>> getLayout(@PathVariable UUID id) {
+    public ResponseEntity<DataResponse<CinemaLayoutDTOItem>> getLayout(@PathVariable UUID id) {
 
-        DataResponse<CinemaLayoutDTO> dataResponse = DataResponse
-                .<CinemaLayoutDTO>builder()
+        DataResponse<CinemaLayoutDTOItem> dataResponse = DataResponse
+                .<CinemaLayoutDTOItem>builder()
                 .data(cinemaLayoutService.getCinemaLayout(id))
                 .message("Get layout successfully")
                 .success(true)

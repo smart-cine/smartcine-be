@@ -10,6 +10,6 @@ import lombok.Setter;
 public class PagingModel {
     private String previousPageCursor;
     private String nextPageCursor;
-    private int  size;
+    private int  limit;
     private long total;
 }

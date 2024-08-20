@@ -52,12 +52,12 @@ public class PerformServiceImpl implements PerformService {
             CursorBasedPageable cursorBasedPageable) {
 
         var performSlide = performRepository.findAll(pageSpecification,
-                Pageable.ofSize(cursorBasedPageable.getSize()));
+                Pageable.ofSize(cursorBasedPageable.getLimit()));
 
         Map<String, Object> pagingMap = new HashMap<>();
         pagingMap.put("previousPageCursor", null);
         pagingMap.put("nextPageCursor", null);
-        pagingMap.put("size", cursorBasedPageable.getSize());
+        pagingMap.put("limit", cursorBasedPageable.getLimit());
         pagingMap.put("total", 0);
         if (performSlide.isEmpty()) {
             return new PageResponse<>(false, List.of(), pagingMap);

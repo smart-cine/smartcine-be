@@ -136,13 +136,13 @@ public class CinemaServiceImpl implements CinemaService {
             CursorBasedPageable cursorBasedPageable) {
 
         var cinemaSlide = cinemaRepository.findAll(pageSpecification,
-                Pageable.ofSize(cursorBasedPageable.getSize()));
+                Pageable.ofSize(cursorBasedPageable.getLimit()));
 
 
         Map<String, String> pagingMap = new HashMap<>();
         pagingMap.put("previousPageCursor", null);
         pagingMap.put("nextPageCursor", null);
-        pagingMap.put("size", String.valueOf(cursorBasedPageable.getSize()));
+        pagingMap.put("limit", String.valueOf(cursorBasedPageable.getLimit()));
         if (!cinemaSlide.hasContent()) return new PageResponse<>(false, List.of(), pagingMap);
 
         List<Cinema> cinemas = cinemaSlide.getContent();

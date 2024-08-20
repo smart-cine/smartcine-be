@@ -1,12 +1,18 @@
 package org.example.cinemamanagement.service.impl;
 
 import org.example.cinemamanagement.dto.cinema.CinemaLayoutDTO;
+import org.example.cinemamanagement.dto.cinema.item.CinemaLayoutDTOItem;
 import org.example.cinemamanagement.mapper.CinemaLayoutMapper;
 import org.example.cinemamanagement.model.CinemaLayout;
+import org.example.cinemamanagement.pagination.CursorBasedPageable;
+import org.example.cinemamanagement.pagination.PagingModel;
 import org.example.cinemamanagement.payload.request.AddCinemaLayoutRequest;
+import org.example.cinemamanagement.payload.response.PageResponse;
 import org.example.cinemamanagement.repository.CinemaLayoutRepository;
 import org.example.cinemamanagement.service.CinemaLayoutService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,19 +28,35 @@ public class CinemaLayoutServiceImpl implements CinemaLayoutService {
     private CinemaLayoutRepository cinemaLayoutRepository;
 
     @Override
-    public List<CinemaLayoutDTO> getAllCinemaLayout() {
-        return cinemaLayoutRepository.findAll()
-                .stream()
-                .map(CinemaLayoutMapper::toDTO)
-                .collect(Collectors.toList());
+    public PageResponse<List<CinemaLayoutDTO>> getAllCinemaLayout(Specification<CinemaLayout> specification, CursorBasedPageable cursorBasedPageable) {
+
+        var cinemaLayoutSlide = cinemaLayoutRepository.findAll(
+                specification, Pageable.ofSize(cursorBasedPageable.getLimit()));
+
+
+        PagingModel pagingMap = PagingModel.builder()
+                .limit(cursorBasedPageable.getLimit())
+                .total(cinemaLayoutSlide.getTotalElements())
+                .build();
+
+        if (cinemaLayoutSlide.isEmpty()) {
+            return new PageResponse<List<CinemaLayoutDTO>>(false, List.of(), pagingMap);
+        }
+
+        List<CinemaLayout> cinemaLayoutList = cinemaLayoutSlide.getContent();
+        pagingMap.setPreviousPageCursor(cursorBasedPageable.getEncodedCursor(cinemaLayoutList.get(0).getId(), cinemaLayoutSlide.hasPrevious()));
+        pagingMap.setNextPageCursor(cursorBasedPageable.getEncodedCursor(cinemaLayoutList.get(cinemaLayoutList.size() - 1).getId(), cinemaLayoutSlide.hasNext()));
+        return new PageResponse<List<CinemaLayoutDTO>>(true, cinemaLayoutList.stream().map(CinemaLayoutMapper::toDTO).collect(Collectors.toList()), pagingMap);
+
     }
 
     @Override
-    public CinemaLayoutDTO getCinemaLayout(UUID id) {
+    public CinemaLayoutDTOItem getCinemaLayout(UUID id) {
         CinemaLayout layout = cinemaLayoutRepository.findById(id)
                 .orElseThrow(() ->
                         new RuntimeException("Cinema layout not found with id: " + id));
-        return CinemaLayoutMapper.toDTO(layout);
+
+        return CinemaLayoutMapper.toDTOItem(layout);
     }
 
     @Override

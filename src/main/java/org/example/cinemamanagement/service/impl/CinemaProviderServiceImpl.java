@@ -26,14 +26,10 @@ public class CinemaProviderServiceImpl implements CinemaProviderService {
     @Override
     public List<CinemaProviderDTO> getAllCinemaProviders() {
 
-        long start = System.currentTimeMillis();
-         cinemaProviderRepository.findAll().stream()
+         return cinemaProviderRepository.findAll().stream()
                 .map(CinemaProviderMapper::toDTO)
                 .collect(Collectors.toList());
-        long end = System.currentTimeMillis();
-        System.out.println("Time taken to fetch all cinema providers: " + (end - start) + "ms");
 
-        return null;
     }
 
     @Override
@@ -47,6 +43,7 @@ public class CinemaProviderServiceImpl implements CinemaProviderService {
     public CinemaProviderDTO saveCinemaProvider(CinemaProviderDTO cinemaProviderDTO) {
         CinemaProvider cinemaProvider = CinemaProviderMapper.toEntity(cinemaProviderDTO);
         CinemaProvider savedCinemaProvider = cinemaProviderRepository.save(cinemaProvider);
+
         return CinemaProviderMapper.toDTO(savedCinemaProvider);
     }
 
@@ -74,7 +71,6 @@ public class CinemaProviderServiceImpl implements CinemaProviderService {
                 e.printStackTrace();
                 throw new RuntimeException("Error updating field " + f.getName());
             }
-
             cinemaProviderRepository.save(cinemaProvider);
         }
     }

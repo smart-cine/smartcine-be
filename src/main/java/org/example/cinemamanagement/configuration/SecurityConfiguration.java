@@ -39,7 +39,7 @@ public class SecurityConfiguration {
                 .cors(cors -> cors.configurationSource(request -> corsConfiguration()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/api/v1/user/**").permitAll()
+                        .requestMatchers("/api/v1/account/**").permitAll()
                         .requestMatchers("/test/**").permitAll()
                         .requestMatchers("/api/v1/payment/ipn").permitAll()
                         .requestMatchers("/api/v1/managers/**").hasAuthority(Role.BUSINESS.name())

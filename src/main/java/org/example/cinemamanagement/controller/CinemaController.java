@@ -28,7 +28,7 @@ public class CinemaController {
     @GetMapping
     public ResponseEntity<?> getAllCinema(
             CursorBasedPageable cursorBasedPageable,
-            @RequestParam(required = false) String nameCinemaSearching) {
+            @RequestParam(required = false, name = "name") String nameCinemaSearching) {
         var specification = new PageSpecification<Cinema>("name", "", nameCinemaSearching, cursorBasedPageable);
         PageResponse<List<CinemaDTO>> cinemaPage = cinemaService.page(specification, cursorBasedPageable);
         return ResponseEntity.ok(cinemaPage);

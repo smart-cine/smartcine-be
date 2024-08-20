@@ -69,7 +69,7 @@ public class Film {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "film")
     private List<Perform> performs;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = {
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {
             CascadeType.DETACH,
             CascadeType.MERGE,
             CascadeType.PERSIST,

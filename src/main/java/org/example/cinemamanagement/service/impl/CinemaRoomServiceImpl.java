@@ -5,6 +5,7 @@ import org.example.cinemamanagement.dto.cinema.item.CinemaLayoutDTOItem;
 import org.example.cinemamanagement.dto.cinema.item.CinemaLayoutGroupDTOItem;
 import org.example.cinemamanagement.dto.cinema.item.CinemaLayoutSeatDTOItem;
 import org.example.cinemamanagement.dto.cinema.item.CinemaRoomDTOItem;
+import org.example.cinemamanagement.mapper.CinemaLayoutMapper;
 import org.example.cinemamanagement.mapper.CinemaRoomMapper;
 import org.example.cinemamanagement.model.Cinema;
 import org.example.cinemamanagement.model.CinemaLayout;
@@ -34,7 +35,6 @@ public class CinemaRoomServiceImpl implements CinemaRoomService {
 
     public CinemaLayoutRepository cinemaLayoutRepository;
     public CinemaRepository cinemaRepository;
-
     public CinemaRoomRepository cinemaRoomRepository;
 
     @Autowired
@@ -47,13 +47,13 @@ public class CinemaRoomServiceImpl implements CinemaRoomService {
     @Override
     public PageResponse<List<CinemaRoomDTO>> getAllCinemaRooms(CursorBasedPageable cursorBasedPageable, PageSpecification<CinemaRoom> specification) {
         var cinemaRoomSlide = cinemaRoomRepository.findAll(specification,
-                Pageable.ofSize(cursorBasedPageable.getSize()));
+                Pageable.ofSize(cursorBasedPageable.getLimit()));
 
         Map<String, Object> pagingMap = new HashMap<>();
 
         pagingMap.put("previousPageCursor", null);
         pagingMap.put("nextPageCursor", null);
-        pagingMap.put("size", cursorBasedPageable.getSize());
+        pagingMap.put("limit", cursorBasedPageable.getLimit());
         pagingMap.put("total", cinemaRoomSlide.getTotalElements());
 
         if (!cinemaRoomSlide.hasContent()) {
@@ -81,26 +81,7 @@ public class CinemaRoomServiceImpl implements CinemaRoomService {
                 .id(cinemaRoom.getId())
                 .cinemaId(cinemaRoom.getCinema().getId())
                 .name(cinemaRoom.getName())
-                .layout(CinemaLayoutDTOItem.builder()
-                        .id(cinemaRoom.getCinemaLayout().getId())
-                        .rows(cinemaRoom.getCinemaLayout().getRows())
-                        .columns(cinemaRoom.getCinemaLayout().getColumns())
-                        .groups(cinemaRoom.getCinemaLayout().getCinemaLayoutGroups().stream().map(group -> CinemaLayoutGroupDTOItem.builder()
-                                .id(group.getId())
-                                .name(group.getName())
-                                .color(group.getColor())
-                                .build()).collect(Collectors.toList())
-                        )
-                        .seats(
-                                cinemaRoom.getCinemaLayout().getCinemaLayoutSeats().stream().map(seat -> CinemaLayoutSeatDTOItem.builder()
-                                        .id(seat.getId())
-                                        .groupId(seat.getCinemaLayoutGroup().getId())
-                                        .code(seat.getCode())
-                                        .x(seat.getX())
-                                        .y(seat.getY())
-                                        .build()).collect(Collectors.toList()
-                                ))
-                        .build())
+                .layout(CinemaLayoutMapper.toDTOItem(cinemaRoom.getCinemaLayout()))
                 .build();
     }
 

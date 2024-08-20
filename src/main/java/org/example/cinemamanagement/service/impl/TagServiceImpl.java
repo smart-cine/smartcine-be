@@ -31,12 +31,12 @@ public class TagServiceImpl implements TagService {
     public PageResponse<List<String>> getAllTags(CursorBasedPageable cursorBasedPageable, PageSpecificationTag<Tag> pageSpecificationTag) {
         try {
             var tagSlide = tagRepository.findAll(pageSpecificationTag,
-                    Pageable.ofSize(cursorBasedPageable.getSize()));
+                    Pageable.ofSize(cursorBasedPageable.getLimit()));
 
             PagingModel paging = PagingModel.builder()
                     .previousPageCursor(null)
                     .nextPageCursor(null)
-                    .size(cursorBasedPageable.getSize())
+                    .limit(cursorBasedPageable.getLimit())
                     .total(0)
                     .build();
 

@@ -31,14 +31,6 @@ public class CinemaLayout {
 
     private Integer columns;
 
-//    @ManyToOne( fetch = FetchType.LAZY, cascade = {
-//            CascadeType.DETACH,
-//            CascadeType.MERGE,
-//            CascadeType.PERSIST,
-//            CascadeType.REFRESH
-//    })
-//    @JoinColumn(name = "manager_id")
-//    private BusinessAccount businessAccount;
 
     @ManyToOne(cascade = {
             CascadeType.DETACH,
