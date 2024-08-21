@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.cinemamanagement.common.BankType;
 import org.example.cinemamanagement.common.Status;
+import org.example.cinemamanagement.mapper.JsonToMapConverter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
@@ -73,7 +74,7 @@ public class Payment {
     private BankType bankType;
 
     // json type
-    @Column(name = "data")
-    @Convert(attributeName = )
+    @Column(name = "data", columnDefinition = "json")
+    @Convert(attributeName = "data", converter = JsonToMapConverter.class)
     private Map<String, Object> data;
 }
