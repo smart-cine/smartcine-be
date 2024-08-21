@@ -22,7 +22,7 @@ public class TagController {
 
     @GetMapping
     public ResponseEntity<?> getAllTags(CursorBasedPageable cursorBasedPageable,
-                                        @RequestParam(required = false, name = "film-id") UUID filmId) {
+                                        @RequestParam(required = false, name = "film_id") UUID filmId) {
         var specification = new PageSpecificationTag<Tag>("name", cursorBasedPageable, filmId == null ? Map.of() : Map.of("filmId", filmId));
         return ResponseEntity.ok(tagService.getAllTags(cursorBasedPageable, specification));
     }

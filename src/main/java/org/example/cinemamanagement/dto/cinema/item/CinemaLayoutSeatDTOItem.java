@@ -11,6 +11,7 @@ import java.util.UUID;
 @Getter
 @Setter
 public class CinemaLayoutSeatDTOItem {
+
     private UUID id;
     @JsonProperty("group_id")
     private UUID groupId;

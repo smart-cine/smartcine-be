@@ -1,15 +1,19 @@
 package org.example.cinemamanagement.model;
 
+import com.google.gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.cinemamanagement.common.BankType;
 import org.example.cinemamanagement.common.Status;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Data
@@ -63,4 +67,13 @@ public class Payment {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type")
+    private BankType bankType;
+
+    // json type
+    @Column(name = "data")
+    @Convert(attributeName = )
+    private Map<String, Object> data;
 }

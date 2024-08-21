@@ -6,6 +6,7 @@ import org.example.cinemamanagement.model.CinemaLayout;
 import org.example.cinemamanagement.pagination.CursorBasedPageable;
 import org.example.cinemamanagement.pagination.PageSpecificationCinemaLayout;
 import org.example.cinemamanagement.payload.request.AddCinemaLayoutRequest;
+import org.example.cinemamanagement.payload.request.CloneLayoutCinemaRequest;
 import org.example.cinemamanagement.payload.response.DataResponse;
 import org.example.cinemamanagement.service.CinemaLayoutService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/cinema-layout")
 public class CinemaLayoutController {
-
 
     CinemaLayoutService cinemaLayoutService;
 
@@ -64,10 +64,20 @@ public class CinemaLayoutController {
 
     @PostMapping
     public ResponseEntity<?> addLayout(@RequestBody AddCinemaLayoutRequest cinemaLayoutRequest) {
-
         DataResponse dataResponse = DataResponse.builder()
                 .message("Add layout successfully")
                 .data(cinemaLayoutService.addCinemaLayout(cinemaLayoutRequest))
+                .success(true)
+                .build();
+
+        return ResponseEntity.ok(dataResponse);
+    }
+
+    @PostMapping("/clone")
+    public ResponseEntity<?> cloneLayout(@RequestBody CloneLayoutCinemaRequest cloneLayoutCinemaRequest) {
+        DataResponse dataResponse = DataResponse.builder()
+                .message("Clone layout successfully")
+                .data(cinemaLayoutService.cloneCinemaLayout(cloneLayoutCinemaRequest.getLayoutId()))
                 .success(true)
                 .build();
 

@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.example.cinemamanagement.common.LayoutType;
 
+import java.util.UUID;
+
 @Data
 public class AddCinemaLayoutRequest {
-
-    @JsonProperty("manager_id")
-    private String managerId;
+    @JsonProperty("provider_id")
+    private UUID providerId;
     private Integer rows;
     private Integer columns;
 }

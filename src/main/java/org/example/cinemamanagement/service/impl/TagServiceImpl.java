@@ -13,6 +13,7 @@ import org.example.cinemamanagement.repository.TagRepository;
 import org.example.cinemamanagement.service.TagService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -84,6 +85,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    @Transactional
     public Boolean deleteTag(AddOrDeleteTagRequest deleteTagRequest) {
         Film film = filmRepository.findById(deleteTagRequest.getFilmId()).orElseThrow(() -> {
             throw new RuntimeException("Film not found");
@@ -97,7 +99,6 @@ public class TagServiceImpl implements TagService {
                 });
                 tags.remove(tagToDelete);
             } catch (Exception e) {
-//                e.printStackTrace();
                 throw new RuntimeException(e);
             }
         }

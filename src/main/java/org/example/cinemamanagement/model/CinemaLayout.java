@@ -19,16 +19,16 @@ import java.util.UUID;
 @Entity
 @Table(name = "cinemalayout")
 public class CinemaLayout {
-
-
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
+    @Column(name = "`rows`")
     private Integer rows;
 
+    @Column(name = "columns")
     private Integer columns;
 
 
@@ -44,7 +44,6 @@ public class CinemaLayout {
     @JsonIgnore
     @OneToMany(mappedBy = "cinemaLayout", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CinemaLayoutGroup> cinemaLayoutGroups;
-
     @JsonIgnore
     @OneToMany(mappedBy = "cinemaLayout", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CinemaLayoutSeat> cinemaLayoutSeats;

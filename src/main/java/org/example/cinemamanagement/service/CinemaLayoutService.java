@@ -23,4 +23,6 @@ public interface CinemaLayoutService {
 
     public void deleteCinemaLayout(UUID id);
 
+    public CinemaLayoutDTOItem cloneCinemaLayout(UUID idLayout);
+
 }
