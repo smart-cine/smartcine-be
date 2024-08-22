@@ -5,34 +5,29 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 @Converter
-public class JsonToMapConverter implements AttributeConverter<String, Map<String, Object>> {
+public class JsonToMapConverter implements AttributeConverter<Map<String, Object>, String> {
+
+    private final static ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
-    public Map<String, Object> convertToDatabaseColumn(String attribute) {
-        try
-        {
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readValue(attribute, HashMap.class);
+    public String convertToDatabaseColumn(Map<String, Object> attribute) {
+        try {
+            return objectMapper.writeValueAsString(attribute);
+        } catch (JsonProcessingException e) {
+            return null; // or handle the exception as needed
         }
-        catch (Exception e) {
-        }
-        return new HashMap<>();
     }
 
     @Override
-    public String convertToEntityAttribute(Map<String, Object> dbData) {
-        try
-        {
-            ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.writeValueAsString(dbData);
-        }
-        catch (JsonProcessingException e)
-        {
-            return null;
+    public Map<String, Object> convertToEntityAttribute(String dbData) {
+        try {
+            return objectMapper.readValue(dbData, HashMap.class);
+        } catch (JsonProcessingException e) {
+            return null; // or handle the exception as needed
         }
     }
 }

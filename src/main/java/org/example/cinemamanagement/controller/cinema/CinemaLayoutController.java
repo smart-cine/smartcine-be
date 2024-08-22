@@ -1,4 +1,4 @@
-package org.example.cinemamanagement.controller;
+package org.example.cinemamanagement.controller.cinema;
 
 import org.example.cinemamanagement.dto.cinema.CinemaLayoutDTO;
 import org.example.cinemamanagement.dto.cinema.item.CinemaLayoutDTOItem;

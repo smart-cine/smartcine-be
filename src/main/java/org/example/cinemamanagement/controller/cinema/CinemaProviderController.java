@@ -1,4 +1,4 @@
-package org.example.cinemamanagement.controller;
+package org.example.cinemamanagement.controller.cinema;
 
 import org.example.cinemamanagement.dto.cinema.CinemaProviderDTO;
 import org.example.cinemamanagement.payload.response.DataResponse;

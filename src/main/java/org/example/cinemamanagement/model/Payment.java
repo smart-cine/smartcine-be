@@ -1,5 +1,6 @@
 package org.example.cinemamanagement.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactory;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.cinemamanagement.common.BankType;
 import org.example.cinemamanagement.common.Status;
+import org.example.cinemamanagement.mapper.JpaConverterJson;
 import org.example.cinemamanagement.mapper.JsonToMapConverter;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
@@ -52,6 +54,7 @@ public class Payment {
     private Timestamp dateExpired;
 
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "payments", cascade = {CascadeType.DETACH,
             CascadeType.MERGE,
             CascadeType.PERSIST,
@@ -75,6 +78,5 @@ public class Payment {
 
     // json type
     @Column(name = "data", columnDefinition = "json")
-    @Convert(attributeName = "data", converter = JsonToMapConverter.class)
-    private Map<String, Object> data;
+    private String data;
 }

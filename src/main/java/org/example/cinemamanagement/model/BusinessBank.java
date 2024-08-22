@@ -1,12 +1,15 @@
 package org.example.cinemamanagement.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.example.cinemamanagement.common.BankType;
 import org.example.cinemamanagement.mapper.JpaConverterJson;
+import org.example.cinemamanagement.mapper.JsonToMapConverter;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -31,9 +34,11 @@ public class BusinessBank {
     @JoinColumn(name = "cinema_provider_id")
     private CinemaProvider cinemaProvider;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "businessBank", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Payment> payments;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "businessBank", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<BankCinema> bankCinemas;
 
@@ -41,9 +46,7 @@ public class BusinessBank {
     @Column(name = "type")
     private BankType type;
 
-
-    @Column(name = "data")
-    @Convert(converter = JpaConverterJson.class)
-    private Object data;
+    @Column(name = "data", columnDefinition = "json")
+    private String data;
 
 }

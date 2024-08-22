@@ -1,11 +1,15 @@
 package org.example.cinemamanagement.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.example.cinemamanagement.model.Account;
+import org.example.cinemamanagement.model.Payment;
 import org.example.cinemamanagement.payload.request.OrderRequestDTO;
 import org.example.cinemamanagement.payload.response.DataResponse;
+import org.example.cinemamanagement.repository.PaymentRepository;
 import org.example.cinemamanagement.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -17,6 +21,9 @@ public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getPayment(@PathVariable UUID id) {
@@ -48,4 +55,13 @@ public class PaymentController {
                 .success(true)
                 .build());
     }
+
+    @PostMapping("/testing")
+    public ResponseEntity<?> test(@RequestBody Map<String, String> body) {
+
+        paymentRepository.save(Payment.builder()
+                .build());
+        return null;
+    }
+
 }
