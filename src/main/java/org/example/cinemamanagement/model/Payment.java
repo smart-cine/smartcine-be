@@ -78,5 +78,6 @@ public class Payment {
 
     // json type
     @Column(name = "data", columnDefinition = "json")
-    private String data;
+    @Convert(converter = JpaConverterJson.class)
+    private Map<String, Object> data;
 }

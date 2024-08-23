@@ -1,6 +1,7 @@
 package org.example.cinemamanagement.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.example.cinemamanagement.common.BankType;
 import org.example.cinemamanagement.common.Status;
 import org.example.cinemamanagement.common.VnPayConstant;
 import org.example.cinemamanagement.dto.PaymentDTO;
@@ -32,9 +33,7 @@ public class VNPayServiceImpl implements PaymentService {
     private CinemaRepository cinemaRepository;
     private PickSeatRepository pickSeatRepository;
     private ModelMapper modelMapper;
-
     private PerformRepository performRepository;
-
     private CinemaLayoutSeatRepository cinemaLayoutSeatRepository;
 
 
@@ -140,8 +139,14 @@ public class VNPayServiceImpl implements PaymentService {
 
             Payment payment = Payment.builder()
                     .account(accountRepository.findById(account.getId()).orElseThrow(() -> new RuntimeException("User not found")))
-                    // convert createDate variable to timestamp type
+                    .perform(performRepository.findById(orderRequestDTO.getPerformId()).orElseThrow(() -> new RuntimeException("Perform not found")))
+                    .item(null)
+                    .businessBank(
 
+                    )
+                    .bankType(BankType.VNPAY)
+                    .data(payload)
+                    .status(Status.PENDING)
                     .dateCreated(Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(
                             formatter.parse(createDate))
                     ))
@@ -150,9 +155,6 @@ public class VNPayServiceImpl implements PaymentService {
                                     formatter.parse(expireDate))
                             )
                     )
-                    .perform(performRepository.findById(orderRequestDTO.getPerformId()).orElseThrow(() -> new RuntimeException("Perform not found")))
-                    .status(Status.PENDING)
-                    .item(null)
                     .build();
 
             paymentRepository.save(payment);
@@ -217,7 +219,6 @@ public class VNPayServiceImpl implements PaymentService {
 
         Payment payment = new Payment();
 
-
         try {
 
             payment = paymentRepository.findByVnpTxnRefAndDateCreate(
@@ -230,19 +231,17 @@ public class VNPayServiceImpl implements PaymentService {
                     Set<String> seatIds = RedisServiceImpl.smembers("pickseat:" + payment.getPerform().getId() + ":" + payment.getAccount().getId());
                     for (String seatId : seatIds) {
                         try {
-
                             pickSeatRepository.save(PickSeat.builder()
                                     .account(payment.getAccount())
                                     .perform(payment.getPerform())
                                     .layoutSeat(cinemaLayoutSeatRepository.findById(UUID.fromString(seatId)).orElseThrow(() -> new RuntimeException("Seat not found")))
-                                    .createAt(Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(
+                                    .dateCreated(Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(
                                             formatter.parse(vnpPayDate))))
                                     .build());
                         } catch (Exception e) {
                             e.printStackTrace();
                             payment.setStatus(Status.FAILED);
                             paymentRepository.save(payment);
-
                             // make a request to refund
 
                             throw new RuntimeException("Error: Some seats are already booked by others. Please try again.");

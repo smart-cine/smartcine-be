@@ -38,8 +38,8 @@ public class PickSeat {
     @JoinColumn(name = "perform_id")
     private Perform perform;
 
-    @Column(name ="created_at")
-    private Timestamp createAt;
+    @Column(name ="date_created")
+    private Timestamp dateCreated;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.DETACH,
             CascadeType.MERGE,

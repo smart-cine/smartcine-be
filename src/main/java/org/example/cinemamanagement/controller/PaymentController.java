@@ -1,7 +1,6 @@
 package org.example.cinemamanagement.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.example.cinemamanagement.model.Account;
 import org.example.cinemamanagement.model.Payment;
 import org.example.cinemamanagement.payload.request.OrderRequestDTO;
 import org.example.cinemamanagement.payload.response.DataResponse;
@@ -9,7 +8,6 @@ import org.example.cinemamanagement.repository.PaymentRepository;
 import org.example.cinemamanagement.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -36,15 +34,32 @@ public class PaymentController {
         return ResponseEntity.ok(dataResponse);
     }
 
-    @PostMapping
-    public ResponseEntity<?> createPayment(
+    @PostMapping("/{type}")
+    public ResponseEntity<DataResponse<Map<String, Object>>> createPayment(
             HttpServletRequest request,
-            @RequestBody OrderRequestDTO req) throws Exception {
-        DataResponse dataResponse = DataResponse.builder()
-                .message("Add payment successfully").success(true)
-                .data(paymentService.createOrder(request, req))
-                .build();
-        return ResponseEntity.ok(dataResponse);
+            @RequestBody OrderRequestDTO req, @PathVariable String type) throws Exception {
+
+        type = type.toUpperCase();
+        switch (type) {
+            case "VNPAY":
+                DataResponse<Map<String, Object>> dataResponse = DataResponse.<Map<String, Object>>builder()
+                        .message("Add payment successfully").success(true)
+                        .data(paymentService.createOrder(request, req))
+                        .build();
+
+                return ResponseEntity.ok(dataResponse);
+            case "MOMO":
+                break;
+
+            case "ZALOPAY":
+                break;
+
+            default:
+                throw new Exception("Don't have this type payment");
+
+        }
+
+        return null;
     }
 
     @GetMapping("/ipn")
