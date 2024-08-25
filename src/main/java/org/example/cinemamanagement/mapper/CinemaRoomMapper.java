@@ -10,7 +10,7 @@ public class CinemaRoomMapper {
         TypeMap<CinemaRoom, CinemaRoomDTO> typeMap = new ModelMapper().createTypeMap(CinemaRoom.class, CinemaRoomDTO.class);
         CinemaRoomDTO cinemaRoomDTO = typeMap.map(cinemaRoom);
         cinemaRoomDTO.setCinemaId(cinemaRoom.getCinema().getId());
-        cinemaRoomDTO.setCinemaLayoutId(cinemaRoom.getCinemaLayout().getId());
+//        cinemaRoomDTO.setCinemaLayoutId(cinemaRoom.getCinemaLayout().getId());
 
         return cinemaRoomDTO;
     }

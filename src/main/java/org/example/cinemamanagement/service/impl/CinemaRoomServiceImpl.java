@@ -81,7 +81,7 @@ public class CinemaRoomServiceImpl implements CinemaRoomService {
                 .id(cinemaRoom.getId())
                 .cinemaId(cinemaRoom.getCinema().getId())
                 .name(cinemaRoom.getName())
-                .layout(CinemaLayoutMapper.toDTOItem(cinemaRoom.getCinemaLayout()))
+//                .layout(CinemaLayoutMapper.toDTOItem(cinemaRoom.getCinemaLayout()))
                 .build();
     }
 
@@ -98,7 +98,7 @@ public class CinemaRoomServiceImpl implements CinemaRoomService {
         CinemaRoom cinemaRoom = CinemaRoom.builder()
                 .name(addOrUpdateCinemaRoom.getName())
                 .cinema(cinema)
-                .cinemaLayout(layout)
+//                .cinemaLayout(layout)
                 .build();
 
         cinemaRoomRepository.save(cinemaRoom);

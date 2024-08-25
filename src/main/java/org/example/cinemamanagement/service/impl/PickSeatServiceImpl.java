@@ -65,7 +65,7 @@ public class PickSeatServiceImpl implements PickSeatService {
             List<String> keys = scanRes.getResult();
 
 
-            if ( keys.size() > 0 && !keys.contains("pickseat:" + pickSeatRequest.getPerformID() + ":" + account.getId()) ) {
+            if (keys.size() > 0 && !keys.contains("pickseat:" + pickSeatRequest.getPerformID() + ":" + account.getId())) {
                 throw new RuntimeException("You can only pick 1 seats");
             }
 
@@ -85,12 +85,11 @@ public class PickSeatServiceImpl implements PickSeatService {
 
     @Override
     public List<PickSeatResponse> getAllSeatsPickedOfPerform(UUID performID) {
-        Perform perform = performRepository.findById(performID).orElseThrow(
+        performRepository.findById(performID).orElseThrow(
                 () -> new RuntimeException("Perform not found")
         );
 
         List<PickSeatResponse> pickSeatPickSeatResponses = new LinkedList<>();
-
         RedisServiceImpl.keys("pickseat:" + performID.toString() + ":*").forEach(value -> {
             pickSeatPickSeatResponses.add(PickSeatResponse.builder()
                     .seatID(UUID.fromString(value.split(":")[2]))

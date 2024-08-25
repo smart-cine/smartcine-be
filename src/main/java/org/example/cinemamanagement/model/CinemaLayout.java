@@ -47,7 +47,8 @@ public class CinemaLayout {
     @JsonIgnore
     @OneToMany(mappedBy = "cinemaLayout", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CinemaLayoutSeat> cinemaLayoutSeats;
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "cinemaLayout")
-    private List<CinemaRoom> cinemaRooms;
+
+    @OneToOne
+    @JoinColumn(name = "cinema_room_id")
+    private CinemaRoom cinemaRooms;
 }

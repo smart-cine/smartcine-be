@@ -34,14 +34,6 @@ public class CinemaRoom {
     )
     private Cinema cinema;
 
-    @ManyToOne(cascade = {
-            CascadeType.DETACH,
-            CascadeType.MERGE,
-            CascadeType.PERSIST,
-            CascadeType.REFRESH}
-    )
-    @JoinColumn(name = "cinema_layout_id")
-    private CinemaLayout cinemaLayout;
 
     @JsonIgnore
     @OneToMany(mappedBy = "cinemaRoom", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

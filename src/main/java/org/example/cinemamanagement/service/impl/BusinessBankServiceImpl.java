@@ -3,10 +3,13 @@ package org.example.cinemamanagement.service.impl;
 import org.example.cinemamanagement.dto.cinema.CinemaProviderDTO;
 import org.example.cinemamanagement.dto.payment.BusinessBankDTO;
 import org.example.cinemamanagement.dto.payment.BusinessBankDTOItem;
+import org.example.cinemamanagement.model.BankCinema;
 import org.example.cinemamanagement.model.BusinessBank;
-import org.example.cinemamanagement.model.CinemaProvider;
+import org.example.cinemamanagement.model.Cinema;
+import org.example.cinemamanagement.payload.request.AddBusinessBankRequest;
 import org.example.cinemamanagement.repository.BusinessBankRepository;
 import org.example.cinemamanagement.repository.CinemaProviderRepository;
+import org.example.cinemamanagement.repository.CinemaRepository;
 import org.example.cinemamanagement.service.BusinessBankService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,10 +22,13 @@ public class BusinessBankServiceImpl implements BusinessBankService {
 
     private BusinessBankRepository businessBankRepository;
     private CinemaProviderRepository cinemaProviderRepository;
+    private CinemaRepository cinemaRepository;
 
-    public BusinessBankServiceImpl(BusinessBankRepository businessBankRepository, CinemaProviderRepository cinemaProviderRepository) {
+
+    public BusinessBankServiceImpl(BusinessBankRepository businessBankRepository, CinemaProviderRepository cinemaProviderRepository, CinemaRepository cinemaRepository) {
         this.businessBankRepository = businessBankRepository;
         this.cinemaProviderRepository = cinemaProviderRepository;
+        this.cinemaRepository = cinemaRepository;
     }
 
     @Override
@@ -34,11 +40,14 @@ public class BusinessBankServiceImpl implements BusinessBankService {
                 .providerId(businessBank.getCinemaProvider().getId())
                 .build()).toList();
     }
+
     @Override
     public BusinessBankDTOItem getBusinessBankById(UUID id) {
         BusinessBank bank = this.businessBankRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Bank not found")
         );
+
+
         return BusinessBankDTOItem.builder()
                 .id(bank.getId())
                 .type(bank.getType())
@@ -51,19 +60,30 @@ public class BusinessBankServiceImpl implements BusinessBankService {
                         .build())
                 .build();
     }
+
     @Override
     @Transactional
-    public BusinessBankDTO saveBusinessBank(BusinessBankDTO businessBankDTO) {
+    public BusinessBankDTO saveBusinessBank(AddBusinessBankRequest addBusinessBankRequest) {
         try {
-            CinemaProvider cinemaProvider = this.cinemaProviderRepository.findById(businessBankDTO.getProviderId()).orElseThrow(
-                    () -> new RuntimeException("Provider not found")
+
+            Cinema cinema = this.cinemaRepository.findById(addBusinessBankRequest.getCinemaId()).orElseThrow(
+                    () -> new RuntimeException("Cinema not found")
             );
 
             BusinessBank businessBank = this.businessBankRepository.save(BusinessBank.builder()
-                    .type(businessBankDTO.getType())
-                    .data(businessBankDTO.getData())
-                    .cinemaProvider(cinemaProvider)
+                    .type(addBusinessBankRequest.getType())
+                    .data(addBusinessBankRequest.getData())
+                    .cinemaProvider(cinema.getCinemaProvider())
                     .build());
+
+            BankCinema bankCinema = BankCinema.builder()
+                    .bankType(addBusinessBankRequest.getType())
+                    .cinema(cinema)
+                    .businessBank(businessBank)
+                    .build();
+
+
+            cinema.getBankCinemas().add(bankCinema);
 
             return BusinessBankDTO.builder()
                     .id(businessBank.getId())

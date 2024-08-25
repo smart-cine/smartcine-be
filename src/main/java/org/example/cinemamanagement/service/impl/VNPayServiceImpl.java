@@ -5,9 +5,7 @@ import org.example.cinemamanagement.common.BankType;
 import org.example.cinemamanagement.common.Status;
 import org.example.cinemamanagement.common.VnPayConstant;
 import org.example.cinemamanagement.dto.PaymentDTO;
-import org.example.cinemamanagement.model.Account;
-import org.example.cinemamanagement.model.Payment;
-import org.example.cinemamanagement.model.PickSeat;
+import org.example.cinemamanagement.model.*;
 import org.example.cinemamanagement.payload.request.AddPaymentRequest;
 import org.example.cinemamanagement.payload.request.OrderRequestDTO;
 import org.example.cinemamanagement.repository.*;
@@ -96,29 +94,43 @@ public class VNPayServiceImpl implements PaymentService {
             }
 
 
-            Payment paymentTemp = paymentRepository.findTheLastPaymentByAccountIdAndPerformId(
+            Optional<Payment> paymentTemp = paymentRepository.existsPaymentWithPendingStatusOfMyOwn(
                     account.getId(),
                     orderRequestDTO.getPerformId()
             );
 
-            if (paymentTemp != null && paymentTemp.getStatus() == Status.PENDING) {
+            if (paymentTemp.isPresent()) {
                 throw new RuntimeException("You have a pending payment");
             }
 
+            Perform perform = performRepository.findById(orderRequestDTO.getPerformId()).orElseThrow(() -> new RuntimeException("Perform not found"));
+            BankCinema bankCinema = perform.getCinemaRoom().getCinema().getBankCinemas().stream().filter(bank -> bank.getBankType() == BankType.VNPAY).findFirst().orElseThrow(() -> new RuntimeException("Bank not found"));
+            BusinessBank businessBank = bankCinema.getBusinessBank();
+
+
+            String vnp_TmnCode = businessBank.getData().get("vnp_TmnCode").toString();
+            String vnp_SecureHash = businessBank.getData().get("vnp_SecureHash").toString();
+
+            System.out.println(vnp_SecureHash + " " + vnp_TmnCode);
+
+            if (vnp_TmnCode == null || vnp_SecureHash == null) {
+                throw new RuntimeException("Error: Bank not found with VNPAY");
+            }
 
             SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 
             String createDate = VnPayHelper.generateDate(false);
             String expireDate = VnPayHelper.generateDate(true);
 
+
             Map<String, Object> payload = new HashMap<>() {
                 {
                     put("vnp_Version", VnPayConstant.VNP_VERSION);
                     put("vnp_Command", VnPayConstant.VNP_COMMAND_ORDER);
-                    put("vnp_TmnCode", VnPayConstant.VNP_TMN_CODE);
+                    put("vnp_TmnCode", vnp_TmnCode);
                     put("vnp_Amount", String.valueOf(orderRequestDTO.getAmount() * 100));
                     put("vnp_CurrCode", VnPayConstant.VNP_CURRENCY_CODE);
-                    put("vnp_TxnRef", VnPayHelper.getRandomNumber(8));
+                    put("vnp_TxnRef", UUID.randomUUID().toString());
                     put("vnp_OrderInfo", orderRequestDTO.getOrderInfo());
                     put("vnp_OrderType", VnPayConstant.ORDER_TYPE);
                     put("vnp_Locale", VnPayConstant.VNP_LOCALE);
@@ -129,21 +141,19 @@ public class VNPayServiceImpl implements PaymentService {
                 }
             };
 
+
             String queryUrl = getQueryUrl(payload).get("queryUrl")
                     + "&vnp_SecureHash="
-                    + VnPayHelper.hmacSHA512(VnPayConstant.SECRET_KEY, getQueryUrl(payload).get("hashData"));
+                    + VnPayHelper.hmacSHA512(vnp_SecureHash, getQueryUrl(payload).get("hashData"));
 
             String paymentUrl = VnPayConstant.VNP_PAY_URL + "?" + queryUrl;
             payload.put("redirect_url", paymentUrl);
 
-
             Payment payment = Payment.builder()
                     .account(accountRepository.findById(account.getId()).orElseThrow(() -> new RuntimeException("User not found")))
-                    .perform(performRepository.findById(orderRequestDTO.getPerformId()).orElseThrow(() -> new RuntimeException("Perform not found")))
+                    .perform(perform)
                     .item(null)
-                    .businessBank(
-
-                    )
+                    .businessBank(businessBank)
                     .bankType(BankType.VNPAY)
                     .data(payload)
                     .status(Status.PENDING)
@@ -217,14 +227,11 @@ public class VNPayServiceImpl implements PaymentService {
         String vnpPayDate = params.get("vnp_PayDate");
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 
-        Payment payment = new Payment();
-
+        Payment payment = paymentRepository.findByVnpTxnRef(vnpTxnRef).orElseThrow(() -> {
+            throw new RuntimeException("Payment not found");
+        });
         try {
 
-            payment = paymentRepository.findByVnpTxnRefAndDateCreate(
-                    Timestamp.valueOf(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                            .format(new SimpleDateFormat("yyyyMMddHHmmss").parse(vnpPayDate)))
-            );
             switch (vnpResponseCode) {
                 case "00":
                     payment.setStatus(Status.SUCCESS);
@@ -248,6 +255,7 @@ public class VNPayServiceImpl implements PaymentService {
 
                         }
                     }
+
                     RedisServiceImpl.del("pickseat:" + payment.getPerform().getId() + ":" + payment.getAccount().getId());
                     break;
                 case "01":

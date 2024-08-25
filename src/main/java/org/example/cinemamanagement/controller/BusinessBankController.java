@@ -3,6 +3,7 @@ package org.example.cinemamanagement.controller;
 import org.example.cinemamanagement.dto.payment.BusinessBankDTO;
 import org.example.cinemamanagement.dto.payment.BusinessBankDTOItem;
 import org.example.cinemamanagement.model.BusinessBank;
+import org.example.cinemamanagement.payload.request.AddBusinessBankRequest;
 import org.example.cinemamanagement.payload.response.DataResponse;
 import org.example.cinemamanagement.service.BusinessBankService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +38,11 @@ public class BusinessBankController {
     }
 
     @PostMapping
-    public ResponseEntity<DataResponse<BusinessBankDTO>> createBusinessBank(@RequestBody(required = true) BusinessBankDTO businessBankDTO) {
+    public ResponseEntity<DataResponse<BusinessBankDTO>> createBusinessBank(@RequestBody(required = true) AddBusinessBankRequest addBusinessBankRequest) {
         return ResponseEntity.ok(DataResponse.<BusinessBankDTO>builder()
                 .success(true)
                 .message("Business bank created successfully")
-                .data(businessBankService.saveBusinessBank(businessBankDTO))
+                .data(businessBankService.saveBusinessBank(addBusinessBankRequest))
                 .build());
     }
 

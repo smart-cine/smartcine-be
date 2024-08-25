@@ -28,5 +28,4 @@ public class BankCinema {
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
     private BankType bankType;
-
 }
