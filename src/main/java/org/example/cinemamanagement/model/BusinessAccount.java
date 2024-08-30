@@ -1,6 +1,7 @@
 package org.example.cinemamanagement.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -25,9 +26,11 @@ public class BusinessAccount {
     @OneToOne(fetch = FetchType.LAZY)
     private Account account;
 
+
     @JsonIgnore
     @OneToOne(mappedBy = "businessAccount", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private BusinessProvider businessProviders;
+    private BusinessOwnership businessOwnership;
+
 
 //    @ManyToMany(fetch = FetchType.LAZY, cascade = {
 //            CascadeType.DETACH,
