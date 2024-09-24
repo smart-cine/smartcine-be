@@ -16,7 +16,25 @@ The **Booking Cinema Ticket System** allows cinema providers to register branche
 - Secure user registration and login for providers, branch managers, and customers using JWT (JSON Web Tokens).
 - Each time a request is made, database will check existing the credentials of its token.
 - Redis is used to enhance authentication performance by caching credentials with a time-to-live (TTL). This reduces database load and speeds up the authentication process, ensuring quick access to user sessions.
-### Authorization
+### Authorization - RBAC + hierarchy of ownership
+![image](https://github.com/user-attachments/assets/75a3b2e7-55c5-40ad-9556-43246b419809)
+- RBAC (Role-Based Access Control) is used to determine permissions for Business Accounts and Customer Accounts.
+- Business Account just have permissions on own their Cinema provider or cinema branches:
+  - Business Accounts: Can access resources associated with their own cinema provider or cinema branches.
+  - Customer Accounts: Have access to booking and ticket management features.
+- Ownership Validation Using DFS concept:
+  - The system checks whether the provider account or branch account is directly linked to the cinema branch.
+  - If not directly linked, the DFS algorithm traverses up the ownership hierarchy to check if the provider account is associated with the parent provider of the cinema.
+  - If a link is found, the request continues to role validation. If no link is found, access is denied.
+  - Code:  ![image](https://github.com/user-attachments/assets/f323275b-73c8-4479-9297-e4068e47138c)
+  - Table Database: To optimize searching, used NoSQL concept, create just only one table for link child entity to parent entity via ID ![image](https://github.com/user-attachments/assets/d260e283-be2e-448a-a00a-be2d937f338d)
+ 
+  
+
+- Role Permission Check:
+  - Once ownership is verified, the system checks the role associated with the account to determine if it has the necessary permissions for the requested API.
+  - If the role has permission, access is granted. Otherwise, access is denied.
+  
 ### Realtime Booking 
 ### Payment 
 
