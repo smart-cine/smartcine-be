@@ -5,11 +5,20 @@ The **Booking Cinema Ticket System** allows cinema providers to register branche
 
 ## Table of Contents
 1. [Description](#description)
-2. [Installation](#installation)
+2. [Core Features](#corefeatures)
 3. [Usage](#usage)
 4. [Configuration](#configuration)
 5. [Contributing](#contributing)
 6. [License](#license)
+
+
+## Core Features
+### Authentication
+### Authorization
+### Realtime Booking 
+### Payment 
+
+
 
 ![image](https://github.com/user-attachments/assets/75a3b2e7-55c5-40ad-9556-43246b419809)
 
