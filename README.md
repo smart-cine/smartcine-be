@@ -6,6 +6,10 @@ The **Booking Cinema Ticket System** allows cinema providers to register branche
 ## Table of Contents
 1. [Description](#description)
 2. [Core Features](#core-features)
+  [2.1 Authentication](#authentication)
+  [2.2 Authorization - RBAC + hierarchy of ownership](#authorization--rbac-+hierarachy-of-ownership)
+  [2.2 Realtime Booking](#realtime-booking)
+  [2.3 Payment](#payment)
 3. [Installation](#installation)
 4. [Contributing](#contributing)
 5. [License](#license)
