@@ -1,5 +1,6 @@
-## About Application
-Project is Cinema Management. The main feature is ordering seat feature with realtime. And System structure of its is micro-service( all services refer to one database). My team use Java just for API. And will use Nodejs for runtime.
+# Smart Cine
+## Description
+The Booking Cinema Ticket System allows cinema providers to register branches and manage ticket bookings, schedules, movies, and customers. Each branch can handle ticket sales, view statistics, and manage screenings.
 
 ### Tech used
 Spring boot, Spring security, JWT
