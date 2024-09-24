@@ -3,6 +3,9 @@ Project is Cinema Management. The main feature is ordering seat feature with rea
 
 ### Tech used
 Spring boot, Spring security, JWT
+
+![image](https://github.com/user-attachments/assets/75a3b2e7-55c5-40ad-9556-43246b419809)
+
 ### Integration
 VNPay e-wallet
 ### Ordering seat realtime feature
