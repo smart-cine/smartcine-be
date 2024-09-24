@@ -6,14 +6,15 @@ The **Booking Cinema Ticket System** allows cinema providers to register branche
 ## Table of Contents
 1. [Description](#description)
 2. [Core Features](#corefeatures)
-3. [Usage](#usage)
-4. [Configuration](#configuration)
-5. [Contributing](#contributing)
-6. [License](#license)
+3. [Installation](#installation)
+4. [Contributing](#contributing)
+5. [License](#license)
 
 
 ## Core Features
 ### Authentication
+- Secure user registration and login for providers, branch managers, and customers using JWT (JSON Web Tokens).
+- Redis is used to enhance authentication performance by caching credentials with a time-to-live (TTL). This reduces database load and speeds up the authentication process, ensuring quick access to user sessions.
 ### Authorization
 ### Realtime Booking 
 ### Payment 
