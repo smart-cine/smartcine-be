@@ -3,6 +3,19 @@
 ## Description
 The **Booking Cinema Ticket System** allows cinema providers to register branches and manage ticket bookings, schedules, movies, and customers. Each branch can handle ticket sales, view statistics, and manage screenings.
 
+## Table of Contents
+- [1. Description](#description)
+- [2. Core Features](#core-features)
+  - [2.1 Authentication](#authentication)
+  - [2.2 Authorization - RBAC + hierarchy of ownership](#authorization---rbac--hierarchy-of-ownership)
+  - [2.2 Booking Handle](#booking-handle)
+  - [2.3 Payment](#payment)
+- [3. Database Design](#database-design)
+- [4. Installation](#installation)
+- [5. Structure of Application](#structure-of-application)
+- [6. Progress](#progress)
+- [7. License](#license)
+
 ## Project Structure 
 ```
   |-exception
@@ -216,19 +229,7 @@ The **Booking Cinema Ticket System** allows cinema providers to register branche
   |-output.txt
 
 ```
-  
-## Table of Contents
-- [1. Description](#description)
-- [2. Core Features](#core-features)
-  - [2.1 Authentication](#authentication)
-  - [2.2 Authorization - RBAC + hierarchy of ownership](#authorization---rbac--hierarchy-of-ownership)
-  - [2.2 Booking Handle](#booking-handle)
-  - [2.3 Payment](#payment)
-- [3. Database Design](#database-design)
-- [4. Installation](#installation)
-- [5. Structure of Application](#structure-of-application)
-- [6. Progress](#progress)
-- [7. License](#license)
+
 
 
 ## Core Features
