@@ -5,7 +5,7 @@ The **Booking Cinema Ticket System** allows cinema providers to register branche
 
 ## Table of Contents
 1. [Description](#description)
-2. [Core Features](#corefeatures)
+2. [Core Features](#core-features)
 3. [Installation](#installation)
 4. [Contributing](#contributing)
 5. [License](#license)
@@ -34,6 +34,9 @@ The **Booking Cinema Ticket System** allows cinema providers to register branche
 - Role Permission Check:
   - Once ownership is verified, the system checks the role associated with the account to determine if it has the necessary permissions for the requested API.
   - If the role has permission, access is granted. Otherwise, access is denied.
+  - Code: ![image](https://github.com/user-attachments/assets/5e631f12-2a22-4b99-a9a3-b0dfcb3107fc)
+  - Table Database: ![image](https://github.com/user-attachments/assets/2fa02d9c-ed91-48a4-bab5-5f1948f42149)
+
   
 ### Realtime Booking 
 ### Payment 
