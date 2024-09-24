@@ -40,3 +40,6 @@ LINK: https://dbdiagram.io/d/Trat-DJien-ITMC-Solution-65bf2fc6ac844320ae6458be
 
 ## Progress
 In progress 
+
+## License 
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
