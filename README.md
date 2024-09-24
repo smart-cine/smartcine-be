@@ -1,9 +1,15 @@
 # Smart Cine
-## Description
-The Booking Cinema Ticket System allows cinema providers to register branches and manage ticket bookings, schedules, movies, and customers. Each branch can handle ticket sales, view statistics, and manage screenings.
 
-### Tech used
-Spring boot, Spring security, JWT
+## Description
+The **Booking Cinema Ticket System** allows cinema providers to register branches and manage ticket bookings, schedules, movies, and customers. Each branch can handle ticket sales, view statistics, and manage screenings.
+
+## Table of Contents
+1. [Description](#description)
+2. [Installation](#installation)
+3. [Usage](#usage)
+4. [Configuration](#configuration)
+5. [Contributing](#contributing)
+6. [License](#license)
 
 ![image](https://github.com/user-attachments/assets/75a3b2e7-55c5-40ad-9556-43246b419809)
 
