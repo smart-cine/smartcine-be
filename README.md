@@ -10,11 +10,12 @@ The **Booking Cinema Ticket System** allows cinema providers to register branche
   - [2.2 Authorization - RBAC + hierarchy of ownership](#authorization---rbac--hierarchy-of-ownership)
   - [2.2 Booking Handle](#booking-handle)
   - [2.3 Payment](#payment)
-- [3. Database Design](#database-design)
-- [4. Installation](#installation)
-- [5. Structure of Application](#structure-of-application)
-- [6. Progress](#progress)
-- [7. License](#license)
+- [3. Project Structure](#project-structure)
+- [4. Database Design](#database-design)
+- [5. Installation](#installation)
+- [6. Structure of Application](#structure-of-application)
+- [7. Progress](#progress)
+- [8. License](#license)
 
 ## Project Structure 
 ```
