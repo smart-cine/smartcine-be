@@ -14,4 +14,6 @@ public class RegisterRequest {
     private String name;
     private String email;
     private String password;
+    @JsonProperty("avatar_url")
+    private String avartarURL;
 }

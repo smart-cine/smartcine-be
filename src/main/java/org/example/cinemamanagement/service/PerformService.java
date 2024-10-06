@@ -6,6 +6,8 @@ import org.example.cinemamanagement.model.Perform;
 import org.example.cinemamanagement.pagination.PageSpecificationPerform;
 import org.example.cinemamanagement.payload.request.AddPerformRequest;
 import org.example.cinemamanagement.pagination.CursorBasedPageable;
+import org.example.cinemamanagement.payload.response.CinemasPerformResponse;
+import org.example.cinemamanagement.payload.response.FilmsPerformResponse;
 import org.example.cinemamanagement.payload.response.PageResponse;
 
 import java.util.List;
@@ -18,10 +20,15 @@ public interface PerformService {
             CursorBasedPageable cursorBasedPageable);
 
     PerformDTOItem getPerformById(UUID id);
+
     PerformDTO addPerform(AddPerformRequest addPerformRequest);
 
     PerformDTO updatePerform(UUID id, Map<String, Object> payload);
 
     void deletePerform(UUID id);
+
+    PageResponse<List<FilmsPerformResponse>> getPerformsByCinema(PageSpecificationPerform<Perform> pageSpecification, CursorBasedPageable cursorBasedPageable);
+
+    PageResponse<List<CinemasPerformResponse>> getPerformsByFilm(PageSpecificationPerform<Perform> pageSpecification, CursorBasedPageable cursorBasedPageable);
 
 }

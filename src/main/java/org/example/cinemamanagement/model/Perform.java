@@ -65,6 +65,5 @@ public class Perform {
 
     @Column(name = "end_time")
     private Timestamp endTime;
-
     private Double price;
 }

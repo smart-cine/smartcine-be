@@ -73,7 +73,7 @@ public class BusinessBankController {
 
         UUID accountId = acc.getId();
 
-        return ResponseEntity.ok(authorizationService.canAccessTo(accountId, itemId, "UPDATE_CINEMA"));
+        return ResponseEntity.ok(authorizationService.canAccessTo(accountId, itemId, "UPDATE_ITE"));
 
     }
 }

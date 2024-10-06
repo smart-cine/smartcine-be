@@ -1,8 +1,8 @@
 package org.example.cinemamanagement.pagination;
 
 import jakarta.persistence.criteria.*;
-import org.example.cinemamanagement.model.Cinema;
-import org.example.cinemamanagement.model.CinemaRoom;
+import org.example.cinemamanagement.model.Perform;
+import org.example.cinemamanagement.utils.DateConverter;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.sql.Timestamp;
@@ -27,12 +27,9 @@ public class PageSpecificationPerform<T> implements Specification<T> {
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-        List<Predicate> predicates = new ArrayList<>();
-        Predicate paginationFilter = applyPaginationFilter(root, criteriaBuilder);
-
-        predicates.add(paginationFilter);
-        predicates.add(filterBaseOnParams(root, query, criteriaBuilder));
-
+        List<Predicate> predicates = new LinkedList<>();
+        predicates.add(this.applyPaginationFilter(root, criteriaBuilder));
+        predicates.add(this.filterBaseOnParams(root, query, criteriaBuilder));
         query.orderBy(criteriaBuilder.asc(root.get(mainFieldName)));
 
         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
@@ -42,25 +39,42 @@ public class PageSpecificationPerform<T> implements Specification<T> {
         var searchValue = cursorBasedPageable.getSearchValue();
 
         if (searchValue == null)
-            return criteriaBuilder.greaterThanOrEqualTo(root.get(mainFieldName), Timestamp.valueOf("1970-01-01 00:00:00"));
+            return criteriaBuilder.greaterThan(root.get(mainFieldName), Timestamp.valueOf("1970-01-01 00:00:00"));
 
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.SSS");
-            Date parsedDate = dateFormat.parse(String.valueOf(searchValue));
-            Timestamp timestamp = new Timestamp(parsedDate.getTime());
-            return criteriaBuilder.greaterThan(root.get(mainFieldName), timestamp);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        return criteriaBuilder.greaterThan(root.get(mainFieldName),
+                DateConverter.convertToTimestamp(
+                        String.valueOf(searchValue),
+                        "yyyy-MM-dd hh:mm:ss.SSS"
+                )
+        );
     }
 
     private Predicate filterBaseOnParams(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-        if (this.paramsSearching.containsKey("cinemaId")) {
-            // get list perform by cinemaId
-            Join<T, CinemaRoom> cinemaRoomJoin = root.join("cinemaRoom");
-            Join<CinemaRoom, Cinema> cinemaJoin = cinemaRoomJoin.join("cinema");
-            return criteriaBuilder.equal(cinemaJoin.get("id"), this.paramsSearching.get("cinemaId"));
+        List<Predicate> predicates = new LinkedList<>();
+        if (this.paramsSearching.containsKey("cinema_id")) {
+            UUID cinemaId = UUID.fromString(String.valueOf(paramsSearching.get("cinema_id")));
+            predicates.add(criteriaBuilder.equal(root.get("cinemaRoom").get("cinema").get("id"), cinemaId));
         }
-        return null;
+
+        if (this.paramsSearching.containsKey("start_time")) {
+            String dateStr = String.valueOf(this.paramsSearching.get("start_time"));
+
+            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("startTime"),
+                            DateConverter.convertToTimestamp(dateStr, "yyyy-MM-dd")
+                    )
+            );
+        }
+
+        if (this.paramsSearching.containsKey("film_id")) {
+            try {
+                UUID filmId = UUID.fromString(String.valueOf(this.paramsSearching.get("film_id")));
+                predicates.add(criteriaBuilder.equal(root.get("film").get("id"), filmId));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+
     }
 }

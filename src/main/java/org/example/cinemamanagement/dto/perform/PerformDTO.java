@@ -34,4 +34,5 @@ public class PerformDTO {
     private Timestamp startTime;
     @JsonProperty("end_time")
     private Timestamp endTime;
+    private Double price;
 }

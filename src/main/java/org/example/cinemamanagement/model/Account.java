@@ -33,9 +33,11 @@ public class Account implements UserDetails {
 
     private String password;
 
+    @Column(name = "avatar_url")
+    private String avatarURL;
+
     @Enumerated(EnumType.STRING)
     private Role role;
-
 
     @JsonIgnore
     @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

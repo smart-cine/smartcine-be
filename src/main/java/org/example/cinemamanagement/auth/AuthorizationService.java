@@ -2,6 +2,7 @@ package org.example.cinemamanagement.auth;
 
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import org.example.cinemamanagement.common.BusinessRole;
 import org.example.cinemamanagement.model.BusinessOwnership;
@@ -11,6 +12,7 @@ import org.example.cinemamanagement.repository.OwnerShipTreeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -32,16 +34,21 @@ public class AuthorizationService {
 
             String sql = "SELECT feature FROM _role_feature WHERE role = :role AND feature = :feature";
 
-            Object roleFeature = entityManager.createNativeQuery(sql)
-                    .setParameter("role", role.name())
-                    .setParameter("feature", feature)
-                    .getSingleResult();
+                Object roleFeature = entityManager.createNativeQuery(sql)
+                        .setParameter("role", role.name())
+                        .setParameter("feature", feature)
+                        .getSingleResult();
+                return roleFeature != null;
 
-            return roleFeature != null;
-
-        } catch (Exception e) {
+        }
+        catch (NoResultException e)
+        {
+            throw new RuntimeException("Don't have permission on your role");
+        }
+        catch (Exception e) {
             throw new RuntimeException(e);
         }
+
     }
 
     private BusinessRole getRoleWithParentEntityOfItem(UUID accountId, UUID itemId) {
@@ -54,7 +61,6 @@ public class AuthorizationService {
                 OwnerShipTree ownerShipTree = ownerShipTreeRepository.findByItemId(itemId).orElseThrow(
                         () -> new RuntimeException("Item not found")
                 );
-
 //                System.out.println(ownerShipTree.getParentId() + " " + ownerShipTree.getItemId());
 
                 if (ownerShipTree.getParentId() == null)
@@ -65,7 +71,6 @@ public class AuthorizationService {
 
                 itemId = ownerShipTree.getParentId();
             }
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

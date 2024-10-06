@@ -1,6 +1,5 @@
 package org.example.cinemamanagement.service.impl;
 
-import jakarta.persistence.EnumType;
 import org.example.cinemamanagement.dto.cinema.CinemaRoomDTO;
 import org.example.cinemamanagement.dto.film.FilmDTO;
 import org.example.cinemamanagement.dto.perform.PerformDTO;
@@ -8,7 +7,10 @@ import org.example.cinemamanagement.dto.perform.PerformDTOItem;
 import org.example.cinemamanagement.mapper.PerformMapper;
 import org.example.cinemamanagement.model.*;
 import org.example.cinemamanagement.pagination.PageSpecificationPerform;
+import org.example.cinemamanagement.pagination.PagingModel;
 import org.example.cinemamanagement.payload.request.AddPerformRequest;
+import org.example.cinemamanagement.payload.response.FilmsPerformResponse;
+import org.example.cinemamanagement.payload.response.CinemasPerformResponse;
 import org.example.cinemamanagement.repository.*;
 import org.example.cinemamanagement.repository.BusinessAccountRepository;
 import org.example.cinemamanagement.service.PerformService;
@@ -54,26 +56,26 @@ public class PerformServiceImpl implements PerformService {
         var performSlide = performRepository.findAll(pageSpecification,
                 Pageable.ofSize(cursorBasedPageable.getLimit()));
 
-        Map<String, Object> pagingMap = new HashMap<>();
-        pagingMap.put("previousPageCursor", null);
-        pagingMap.put("nextPageCursor", null);
-        pagingMap.put("limit", cursorBasedPageable.getLimit());
-        pagingMap.put("total", 0);
+        PagingModel pagingModel = PagingModel.builder()
+                .total(0)
+                .limit(cursorBasedPageable.getLimit())
+                .build();
+
         if (performSlide.isEmpty()) {
-            return new PageResponse<>(false, List.of(), pagingMap);
+            return new PageResponse<>(false, List.of(), pagingModel);
         }
 
         List<Perform> performs = performSlide.getContent();
-        pagingMap.put("previousPageCursor", cursorBasedPageable.getEncodedCursor(performs.get(0).getStartTime(), performSlide.hasPrevious()));
-        pagingMap.put("nextPageCursor", cursorBasedPageable.getEncodedCursor(performs.get(performs.size() - 1).getStartTime(), performSlide.hasNext()));
-        pagingMap.put("total", performSlide.getTotalElements());
 
-//        return new PageResponse<>(true, performs.stream()
-//                .map(PerformMapper::toDTO)
-//                .collect(Collectors.toList()), pagingMap);
+        pagingModel.setNextPageCursor(cursorBasedPageable
+                .getEncodedCursor(performs
+                        .get(performs.size() - 1).getStartTime(), performSlide.hasNext()
+                ));
+        pagingModel.setTotal(performSlide.getTotalElements());
+
         return new PageResponse<>(true, performs.stream()
                 .map(Perform::getId)
-                .collect(Collectors.toList()), pagingMap);
+                .collect(Collectors.toList()), pagingModel);
     }
 
     @Override
@@ -81,39 +83,7 @@ public class PerformServiceImpl implements PerformService {
         Perform perform = performRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Perform not found with id: " + id));
 
-        return PerformDTOItem
-                .builder()
-                .filmDTO(FilmDTO.builder()
-                        .id(perform.getFilm().getId())
-                        .title(perform.getFilm().getTitle())
-                        .duration(perform.getFilm().getDuration())
-                        .description(perform.getFilm().getDescription())
-                        .country(perform.getFilm().getCountry())
-                        .director(perform.getFilm().getDirector())
-                        .language(perform.getFilm().getLanguage())
-                        .tags(perform.getFilm().getTags().stream()
-                                .map(Tag::getName)
-                                .collect(Collectors.toList()))
-                        .description(perform.getFilm().getDescription())
-                        .country(perform.getFilm().getCountry())
-                        .director(perform.getFilm().getDirector())
-                        .restrictAge(perform.getFilm().getRestrictAge())
-                        .releaseDate(perform.getFilm().getReleaseDate())
-                        .pictureUrl(perform.getFilm().getPictureUrl())
-                        .trailerUrl(perform.getFilm().getTrailerUrl())
-                        .build())
-                .translateType(perform.getTranslateType())
-                .viewType(perform.getViewType())
-                .startTime(perform.getStartTime())
-                .endTime(perform.getEndTime())
-                .price(perform.getPrice())
-                .id(perform.getId())
-                .cinemaRoomDTO(CinemaRoomDTO.builder()
-                        .id(perform.getCinemaRoom().getId())
-                        .name(perform.getCinemaRoom().getName())
-                        .cinemaId(perform.getCinemaRoom().getCinema().getId())
-                        .build())
-                .build();
+        return PerformMapper.toDtoITem(perform);
     }
 
     @Override
@@ -182,5 +152,52 @@ public class PerformServiceImpl implements PerformService {
         performRepository.deleteById(id);
     }
 
+    @Override
+    public PageResponse<List<FilmsPerformResponse>> getPerformsByCinema(PageSpecificationPerform<Perform> pageSpecification, CursorBasedPageable cursorBasedPageable) {
+        {
+            var performSlide = performRepository.findAll(pageSpecification,
+                    Pageable.ofSize(cursorBasedPageable.getLimit()));
 
+            PagingModel paging = PagingModel.builder()
+                    .previousPageCursor(null)
+                    .nextPageCursor(null)
+                    .limit(cursorBasedPageable.getLimit())
+                    .total(0)
+                    .build();
+
+            if (!performSlide.hasContent())
+                return new PageResponse<List<FilmsPerformResponse>>(false, List.of(), paging);
+
+            List<Perform> performs = performSlide.getContent();
+
+            paging.setNextPageCursor(cursorBasedPageable.getEncodedCursor(performs.get(performs.size() - 1).getStartTime(), performSlide.hasNext()));
+            paging.setPreviousPageCursor(cursorBasedPageable.getEncodedCursor(performs.get(0).getStartTime(), performSlide.hasPrevious()));
+            paging.setTotal(performSlide.getTotalElements());
+
+            return new PageResponse<>(true, PerformMapper.listFilmsResponse(performs), paging);
+        }
+    }
+
+    @Override
+    public PageResponse<List<CinemasPerformResponse>> getPerformsByFilm(PageSpecificationPerform<Perform> pageSpecification, CursorBasedPageable cursorBasedPageable) {
+        {
+            var performSlide = performRepository.findAll(pageSpecification,
+                    Pageable.ofSize(cursorBasedPageable.getLimit()));
+
+            PagingModel paging = PagingModel.builder()
+                    .limit(cursorBasedPageable.getLimit())
+                    .total(0)
+                    .build();
+
+            if (!performSlide.hasContent())
+                return new PageResponse<List<CinemasPerformResponse>>(false, List.of(), paging);
+
+            List<Perform> performs = performSlide.getContent();
+
+            paging.setNextPageCursor(cursorBasedPageable.getEncodedCursor(performs.get(performs.size() - 1).getStartTime(), performSlide.hasNext()));
+            paging.setTotal(performSlide.getTotalElements());
+
+            return new PageResponse<>(true, PerformMapper.listCinemasResponse(performs), paging);
+        }
+    }
 }

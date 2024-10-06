@@ -31,7 +31,6 @@ public class FilmServiceImpl implements FilmService {
 
     BusinessAccountRepository managerAccountRepository;
 
-
     @Autowired
     public FilmServiceImpl(TagRepository tagRepository, FilmRepository filmRepository, CinemaProviderRepository cinemaProviderRepository, BusinessAccountRepository managerAccountRepository) {
         this.tagRepository = tagRepository;

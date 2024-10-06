@@ -19,7 +19,7 @@ public class AuthenticationController {
     public ResponseEntity<?> register(
             @RequestBody RegisterRequest request
     ) {
-        AuthenticationResponse authRes =service.register(request);
+        AuthenticationResponse authRes = service.register(request);
         DataResponse<AuthenticationResponse> response = DataResponse.<AuthenticationResponse>builder()
                 .message("Register successfully")
                 .success(true)
